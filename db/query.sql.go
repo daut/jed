@@ -106,3 +106,34 @@ func (q *Queries) GetProducts(ctx context.Context, arg GetProductsParams) ([]Pro
 	}
 	return items, nil
 }
+
+const updateProduct = `-- name: UpdateProduct :one
+UPDATE products
+SET name = $1, description = $2, price = $3
+WHERE id = $4
+RETURNING id, name, description, price
+`
+
+type UpdateProductParams struct {
+	Name        pgtype.Text
+	Description pgtype.Text
+	Price       pgtype.Numeric
+	ID          int32
+}
+
+func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error) {
+	row := q.db.QueryRow(ctx, updateProduct,
+		arg.Name,
+		arg.Description,
+		arg.Price,
+		arg.ID,
+	)
+	var i Product
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Price,
+	)
+	return i, err
+}

@@ -105,8 +105,45 @@ func (h *Handler) ProductList(w http.ResponseWriter, r *http.Request) {
 	h.App.WriteJSON(w, http.StatusOK, products, nil)
 }
 
-func ProductUpdate(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 	// Needs admin authentication
+
+	idParam := r.PathValue("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		return
+	}
+
+	var input struct {
+		Name        string  `json:"name"`
+		Description string  `json:"description"`
+		Price       float64 `json:"price"`
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&input)
+	if err != nil {
+		h.App.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	price, err := utils.ConvertToPGNumeric(input.Price)
+	if err != nil {
+		h.App.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	args := &db.UpdateProductParams{
+		Name:        pgtype.Text{String: input.Name, Valid: true},
+		Description: pgtype.Text{String: input.Description, Valid: true},
+		Price:       *price,
+		ID:          int32(id),
+	}
+	_, err = h.App.Queries.UpdateProduct(r.Context(), *args)
+	if err != nil {
+		h.App.ServerError(w, err)
+		return
+	}
+
 	w.Write([]byte("Product Update"))
 }
 
@@ -118,18 +155,20 @@ func (h *Handler) ProductDelete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
 		h.App.ClientError(w, http.StatusBadRequest)
+		return
 	}
 
-	_, err = h.App.Queries.DeleteProduct(r.Context(), int32(id))
+	prod, err := h.App.Queries.DeleteProduct(r.Context(), int32(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			h.App.NotFound(w)
 		} else {
 			h.App.ServerError(w, err)
 		}
+		return
 	}
 
-	h.App.InfoLog.Printf("Product %d deleted", id)
+	h.App.InfoLog.Printf("Product %v deleted", prod.Name)
 
 	h.App.WriteJSON(w, http.StatusNoContent, nil, nil)
 }

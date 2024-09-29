@@ -35,6 +35,7 @@ func main() {
 	router.HandleFunc("POST /products", h.ProductCreate)
 	router.HandleFunc("GET /products", h.ProductList)
 	router.HandleFunc("GET /products/{id}", h.ProductRead)
+	router.HandleFunc("PUT /products/{id}", h.ProductUpdate)
 	router.HandleFunc("DELETE /products/{id}", h.ProductDelete)
 
 	infoLog.Printf("Starting server on :8080")

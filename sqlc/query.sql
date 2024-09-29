@@ -13,6 +13,12 @@ INSERT INTO products (name, description, price)
 VALUES ($1, $2, $3)
 RETURNING *;
 
+-- name: UpdateProduct :one
+UPDATE products
+SET name = $1, description = $2, price = $3
+WHERE id = $4
+RETURNING *;
+
 -- name: DeleteProduct :one
 DELETE FROM products
 WHERE id = $1
