@@ -2,22 +2,53 @@ package handlers
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/daut/simpshop/cmd/api/global"
 	"github.com/daut/simpshop/db"
+	"github.com/daut/simpshop/internal/utils"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Handler struct {
 	App *global.Application
 }
 
-func ProductCreate(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ProductCreate(w http.ResponseWriter, r *http.Request) {
 	// Needs admin authentication
-	w.Write([]byte("Product Create"))
+
+	var input struct {
+		Name        string  `json:"name"`
+		Description string  `json:"description"`
+		Price       float64 `json:"price"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&input)
+	if err != nil {
+		h.App.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	price, err := utils.ConvertToPGNumeric(input.Price)
+	if err != nil {
+		h.App.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	args := &db.CreateProductParams{
+		Name:        pgtype.Text{String: input.Name, Valid: true},
+		Description: pgtype.Text{String: input.Description, Valid: true},
+		Price:       *price,
+	}
+	prod, err := h.App.Queries.CreateProduct(r.Context(), *args)
+	if err != nil {
+		h.App.ServerError(w, err)
+		return
+	}
+
+	h.App.WriteJSON(w, http.StatusCreated, prod, nil)
 }
 
 func (h *Handler) ProductRead(w http.ResponseWriter, r *http.Request) {
@@ -79,9 +110,26 @@ func ProductUpdate(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Product Update"))
 }
 
-func ProductDelete(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ProductDelete(w http.ResponseWriter, r *http.Request) {
 	// Needs admin authentication
-	id := r.PathValue("id")
-	fmt.Print(id)
-	w.Write([]byte("Product Delete"))
+
+	idParam := r.PathValue("id")
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		h.App.ClientError(w, http.StatusBadRequest)
+	}
+
+	_, err = h.App.Queries.DeleteProduct(r.Context(), int32(id))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			h.App.NotFound(w)
+		} else {
+			h.App.ServerError(w, err)
+		}
+	}
+
+	h.App.InfoLog.Printf("Product %d deleted", id)
+
+	h.App.WriteJSON(w, http.StatusNoContent, nil, nil)
 }

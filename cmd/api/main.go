@@ -32,9 +32,10 @@ func main() {
 	h := &handlers.Handler{App: app}
 
 	router := http.NewServeMux()
+	router.HandleFunc("POST /products", h.ProductCreate)
 	router.HandleFunc("GET /products", h.ProductList)
 	router.HandleFunc("GET /products/{id}", h.ProductRead)
-	router.HandleFunc("DELETE /products/{id}", handlers.ProductDelete)
+	router.HandleFunc("DELETE /products/{id}", h.ProductDelete)
 
 	infoLog.Printf("Starting server on :8080")
 	http.ListenAndServe(":8080", router)
