@@ -7,17 +7,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/daut/simpshop/cmd/api/global"
 	"github.com/daut/simpshop/db"
 	"github.com/daut/simpshop/internal/utils"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Handler struct {
-	App *global.Application
-}
-
-func (h *Handler) ProductCreate(w http.ResponseWriter, r *http.Request) {
+func (handler *Handler) ProductCreate(w http.ResponseWriter, r *http.Request) {
 	// Needs admin authentication
 
 	var input struct {
@@ -28,13 +23,13 @@ func (h *Handler) ProductCreate(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		h.App.ClientError(w, http.StatusBadRequest)
+		handler.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
 	price, err := utils.ConvertToPGNumeric(input.Price)
 	if err != nil {
-		h.App.ClientError(w, http.StatusBadRequest)
+		handler.ClientError(w, http.StatusBadRequest)
 		return
 	}
 	args := &db.CreateProductParams{
@@ -42,36 +37,36 @@ func (h *Handler) ProductCreate(w http.ResponseWriter, r *http.Request) {
 		Description: pgtype.Text{String: input.Description, Valid: true},
 		Price:       *price,
 	}
-	prod, err := h.App.Queries.CreateProduct(r.Context(), *args)
+	prod, err := handler.Queries.CreateProduct(r.Context(), *args)
 	if err != nil {
-		h.App.ServerError(w, err)
+		handler.ServerError(w, err)
 		return
 	}
 
-	h.App.WriteJSON(w, http.StatusCreated, prod, nil)
+	handler.WriteJSON(w, http.StatusCreated, prod, nil)
 }
 
-func (h *Handler) ProductRead(w http.ResponseWriter, r *http.Request) {
+func (handler *Handler) ProductRead(w http.ResponseWriter, r *http.Request) {
 	idParam := r.PathValue("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		h.App.ClientError(w, http.StatusBadRequest)
+		handler.ClientError(w, http.StatusBadRequest)
 		return
 	}
-	prod, err := h.App.Queries.GetProduct(r.Context(), int32(id))
+	prod, err := handler.Queries.GetProduct(r.Context(), int32(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			h.App.NotFound(w)
+			handler.NotFound(w)
 		} else {
-			h.App.ServerError(w, err)
+			handler.ServerError(w, err)
 		}
 		return
 	}
 
-	h.App.WriteJSON(w, http.StatusOK, prod, nil)
+	handler.WriteJSON(w, http.StatusOK, prod, nil)
 }
 
-func (h *Handler) ProductList(w http.ResponseWriter, r *http.Request) {
+func (handler *Handler) ProductList(w http.ResponseWriter, r *http.Request) {
 	pageParam := r.URL.Query().Get("page")
 	if pageParam == "" {
 		pageParam = "1"
@@ -79,7 +74,7 @@ func (h *Handler) ProductList(w http.ResponseWriter, r *http.Request) {
 
 	page, err := strconv.Atoi(pageParam)
 	if err != nil || page < 1 {
-		h.App.ClientError(w, http.StatusBadRequest)
+		handler.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
@@ -87,25 +82,25 @@ func (h *Handler) ProductList(w http.ResponseWriter, r *http.Request) {
 		Limit:  10,
 		Offset: (int32(page) - 1) * 10,
 	}
-	products, err := h.App.Queries.GetProducts(r.Context(), *args)
+	products, err := handler.Queries.GetProducts(r.Context(), *args)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			h.App.NotFound(w)
+			handler.NotFound(w)
 		} else {
-			h.App.ServerError(w, err)
+			handler.ServerError(w, err)
 		}
 		return
 	}
 
 	if len(products) == 0 {
-		h.App.NotFound(w)
+		handler.NotFound(w)
 		return
 	}
 
-	h.App.WriteJSON(w, http.StatusOK, products, nil)
+	handler.WriteJSON(w, http.StatusOK, products, nil)
 }
 
-func (h *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
+func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 	// Needs admin authentication
 
 	idParam := r.PathValue("id")
@@ -123,13 +118,13 @@ func (h *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		h.App.ClientError(w, http.StatusBadRequest)
+		handler.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
 	price, err := utils.ConvertToPGNumeric(input.Price)
 	if err != nil {
-		h.App.ClientError(w, http.StatusBadRequest)
+		handler.ClientError(w, http.StatusBadRequest)
 		return
 	}
 	args := &db.UpdateProductParams{
@@ -138,37 +133,37 @@ func (h *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 		Price:       *price,
 		ID:          int32(id),
 	}
-	_, err = h.App.Queries.UpdateProduct(r.Context(), *args)
+	_, err = handler.Queries.UpdateProduct(r.Context(), *args)
 	if err != nil {
-		h.App.ServerError(w, err)
+		handler.ServerError(w, err)
 		return
 	}
 
 	w.Write([]byte("Product Update"))
 }
 
-func (h *Handler) ProductDelete(w http.ResponseWriter, r *http.Request) {
+func (handler *Handler) ProductDelete(w http.ResponseWriter, r *http.Request) {
 	// Needs admin authentication
 
 	idParam := r.PathValue("id")
 
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		h.App.ClientError(w, http.StatusBadRequest)
+		handler.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
-	prod, err := h.App.Queries.DeleteProduct(r.Context(), int32(id))
+	prod, err := handler.Queries.DeleteProduct(r.Context(), int32(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			h.App.NotFound(w)
+			handler.NotFound(w)
 		} else {
-			h.App.ServerError(w, err)
+			handler.ServerError(w, err)
 		}
 		return
 	}
 
-	h.App.InfoLog.Printf("Product %v deleted", prod.Name)
+	handler.Logger.Info.Printf("Product %v deleted", prod.Name)
 
-	h.App.WriteJSON(w, http.StatusNoContent, nil, nil)
+	handler.WriteJSON(w, http.StatusNoContent, nil, nil)
 }
