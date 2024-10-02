@@ -7,46 +7,43 @@ import (
 	"testing"
 
 	"github.com/daut/simpshop/db"
+	"github.com/daut/simpshop/internal/assert"
+	"github.com/daut/simpshop/internal/testutils"
 	"github.com/daut/simpshop/internal/utils"
-	"github.com/jackc/pgx/v5"
 	"github.com/orlangure/gnomock"
-	"github.com/orlangure/gnomock/preset/postgres"
 )
 
-var user = "test"
-var password = "test"
-var databaseName = "test_shop"
-
 func TestProductRead(t *testing.T) {
-	p := postgres.Preset(
-		postgres.WithUser(user, password),
-		postgres.WithDatabase(databaseName),
-		postgres.WithQueries("insert into products (name, description, price) values ('test', 'test', 1.00)"),
-		postgres.WithQueriesFile("../../../sqlc/schema.sql"),
-		postgres.WithTimezone("Europe/Belgrade"),
-	)
-
-	container, err := gnomock.Start(p)
-	if err != nil {
-		t.Fatal(err)
-	}
+	queries := []string{"insert into products (name, description, price) values ('product1', 'good product', 100)"}
+	container := testutils.NewDBContainer(t, queries)
 	defer gnomock.Stop(container)
 
-	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, "user=daut dbname=simpshop sslmode=verify-full")
-	if err != nil {
-		panic(err)
-	}
-	defer conn.Close(ctx)
+	conn := testutils.NewDBConn(t, container)
+	defer conn.Close(context.Background())
 
 	handlers := New(db.New(conn), utils.NewLogger())
 
-	req := httptest.NewRequest("GET", "/products/1", nil)
-	w := httptest.NewRecorder()
-	handlers.ProductRead(w, req)
-	resp := w.Result()
+	tests := []struct {
+		Name           string
+		ID             string
+		Expected       string
+		Actual         string
+		ExpectedStatus int
+		ActualStatus   int
+	}{
+		{Name: "Product exists", ID: "1", Expected: `{"id":1,"name":"product1","description":"good product","price":100}`, ExpectedStatus: http.StatusOK},
+		{Name: "Product does not exist", ID: "2", Expected: `{"error":"product not found"}`, ExpectedStatus: http.StatusNotFound},
+	}
 
-	if resp.StatusCode != http.StatusNotFound {
-		t.Errorf("expected status 404, got %d", resp.StatusCode)
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/products/"+tt.ID, nil)
+			w := httptest.NewRecorder()
+			req.SetPathValue("id", tt.ID)
+			handlers.ProductRead(w, req)
+			resp := w.Result()
+			assert.Equal(t, tt.ExpectedStatus, resp.StatusCode)
+			// assert.JSONEq(t, tt.Expected, w.Body.String())
+		})
 	}
 }
