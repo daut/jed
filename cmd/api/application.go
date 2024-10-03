@@ -15,7 +15,7 @@ type Application struct {
 	Router  http.Handler
 }
 
-func New(conn *pgx.Conn) *Application {
+func NewApp(conn *pgx.Conn) *Application {
 	queries := db.New(conn)
 	logger := utils.NewLogger()
 	router := router.New(queries, logger)

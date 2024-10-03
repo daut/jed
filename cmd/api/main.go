@@ -15,7 +15,7 @@ func main() {
 	}
 	defer conn.Close(ctx)
 
-	app := New(conn)
+	app := NewApp(conn)
 
 	app.Logger.Info.Printf("Starting server on :8080")
 	http.ListenAndServe(":8080", app.Router)
