@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/daut/simpshop/db"
@@ -27,12 +28,10 @@ func TestProductRead(t *testing.T) {
 		Name           string
 		ID             string
 		Expected       string
-		Actual         string
 		ExpectedStatus int
-		ActualStatus   int
 	}{
-		{Name: "Product exists", ID: "1", Expected: `{"id":1,"name":"product1","description":"good product","price":100}`, ExpectedStatus: http.StatusOK},
-		{Name: "Product does not exist", ID: "2", Expected: `{"error":"product not found"}`, ExpectedStatus: http.StatusNotFound},
+		{Name: "Product exists", ID: "1", Expected: `{"id":1,"name":"product1","description":"good product","price":100.00}`, ExpectedStatus: http.StatusOK},
+		{Name: "Product does not exist", ID: "2", Expected: "Not Found", ExpectedStatus: http.StatusNotFound},
 	}
 
 	for _, tt := range tests {
@@ -43,7 +42,7 @@ func TestProductRead(t *testing.T) {
 			handlers.ProductRead(w, req)
 			resp := w.Result()
 			assert.Equal(t, tt.ExpectedStatus, resp.StatusCode)
-			// assert.JSONEq(t, tt.Expected, w.Body.String())
+			assert.Equal(t, tt.Expected, strings.TrimSpace(w.Body.String()))
 		})
 	}
 }

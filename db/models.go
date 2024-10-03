@@ -9,8 +9,8 @@ import (
 )
 
 type Product struct {
-	ID          int32
-	Name        pgtype.Text
-	Description pgtype.Text
-	Price       pgtype.Numeric
+	ID          int32          `json:"id"`
+	Name        pgtype.Text    `json:"name"`
+	Description pgtype.Text    `json:"description"`
+	Price       pgtype.Numeric `json:"price"`
 }

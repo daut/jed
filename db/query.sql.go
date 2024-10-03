@@ -18,9 +18,9 @@ RETURNING id, name, description, price
 `
 
 type CreateProductParams struct {
-	Name        pgtype.Text
-	Description pgtype.Text
-	Price       pgtype.Numeric
+	Name        pgtype.Text    `json:"name"`
+	Description pgtype.Text    `json:"description"`
+	Price       pgtype.Numeric `json:"price"`
 }
 
 func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error) {
@@ -78,8 +78,8 @@ OFFSET $2
 `
 
 type GetProductsParams struct {
-	Limit  int32
-	Offset int32
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) GetProducts(ctx context.Context, arg GetProductsParams) ([]Product, error) {
@@ -115,10 +115,10 @@ RETURNING id, name, description, price
 `
 
 type UpdateProductParams struct {
-	Name        pgtype.Text
-	Description pgtype.Text
-	Price       pgtype.Numeric
-	ID          int32
+	Name        pgtype.Text    `json:"name"`
+	Description pgtype.Text    `json:"description"`
+	Price       pgtype.Numeric `json:"price"`
+	ID          int32          `json:"id"`
 }
 
 func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error) {
