@@ -3,7 +3,7 @@
 //   sqlc v1.27.0
 // source: products.sql
 
-package db
+package sqlc
 
 import (
 	"context"
@@ -18,7 +18,7 @@ RETURNING id, name, description, price
 `
 
 type CreateProductParams struct {
-	Name        pgtype.Text    `json:"name"`
+	Name        string         `json:"name"`
 	Description pgtype.Text    `json:"description"`
 	Price       pgtype.Numeric `json:"price"`
 }
@@ -115,7 +115,7 @@ RETURNING id, name, description, price
 `
 
 type UpdateProductParams struct {
-	Name        pgtype.Text    `json:"name"`
+	Name        string         `json:"name"`
 	Description pgtype.Text    `json:"description"`
 	Price       pgtype.Numeric `json:"price"`
 	ID          int32          `json:"id"`

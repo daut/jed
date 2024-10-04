@@ -3,12 +3,10 @@
 //   sqlc v1.27.0
 // source: admins.sql
 
-package db
+package sqlc
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const getAdmin = `-- name: GetAdmin :one
@@ -17,8 +15,8 @@ WHERE id = $1
 `
 
 type GetAdminRow struct {
-	ID       int32       `json:"id"`
-	Username pgtype.Text `json:"username"`
+	ID       int32  `json:"id"`
+	Username string `json:"username"`
 }
 
 func (q *Queries) GetAdmin(ctx context.Context, id int32) (GetAdminRow, error) {
@@ -41,8 +39,8 @@ type ListAdminsParams struct {
 }
 
 type ListAdminsRow struct {
-	ID       int32       `json:"id"`
-	Username pgtype.Text `json:"username"`
+	ID       int32  `json:"id"`
+	Username string `json:"username"`
 }
 
 func (q *Queries) ListAdmins(ctx context.Context, arg ListAdminsParams) ([]ListAdminsRow, error) {

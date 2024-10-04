@@ -2,21 +2,21 @@
 // versions:
 //   sqlc v1.27.0
 
-package db
+package sqlc
 
 import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Admin struct {
-	ID       int32       `json:"id"`
-	Username pgtype.Text `json:"username"`
-	Password pgtype.Text `json:"password"`
+	ID       int32  `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type Product struct {
 	ID          int32          `json:"id"`
-	Name        pgtype.Text    `json:"name"`
+	Name        string         `json:"name"`
 	Description pgtype.Text    `json:"description"`
 	Price       pgtype.Numeric `json:"price"`
 }
