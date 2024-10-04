@@ -86,3 +86,72 @@ func TestProductList(t *testing.T) {
 		})
 	}
 }
+
+func TestProductCreate(t *testing.T) {
+	t.Parallel()
+	queries := []string{}
+	container := testutils.NewDBContainer(t, queries)
+	defer gnomock.Stop(container)
+
+	conn := testutils.NewDBConn(t, container)
+	defer conn.Close(context.Background())
+
+	handlers := New(db.New(conn), utils.NewLogger())
+
+	tests := []struct {
+		Name           string
+		Body           string
+		Expected       string
+		ExpectedStatus int
+	}{
+		{Name: "Valid product", Body: `{"name":"product1","description":"good product","price":100}`, Expected: `{"id":1,"name":"product1","description":"good product","price":100.00}`, ExpectedStatus: http.StatusCreated},
+		{Name: "Invalid JSON", Body: `{"name":"product1"`, Expected: "Bad Request", ExpectedStatus: http.StatusBadRequest},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			req := httptest.NewRequest("POST", "/products", strings.NewReader(tt.Body))
+			w := httptest.NewRecorder()
+			handlers.ProductCreate(w, req)
+			resp := w.Result()
+			assert.Equal(t, tt.ExpectedStatus, resp.StatusCode)
+			assert.Equal(t, tt.Expected, strings.TrimSpace(w.Body.String()))
+		})
+	}
+}
+
+func TestProductUpdate(t *testing.T) {
+	t.Parallel()
+	queries := []string{"insert into products (name, description, price) values ('product1', 'good product', 1000)"}
+	container := testutils.NewDBContainer(t, queries)
+	defer gnomock.Stop(container)
+
+	conn := testutils.NewDBConn(t, container)
+	defer conn.Close(context.Background())
+
+	handlers := New(db.New(conn), utils.NewLogger())
+
+	tests := []struct {
+		Name           string
+		ID             string
+		Body           string
+		Expected       string
+		ExpectedStatus int
+	}{
+		{Name: "Update price", ID: "1", Body: `{"name":"product1","description":"good product","price":1000}`, Expected: `{"id":1,"name":"product1","description":"good product","price":1000.00}`, ExpectedStatus: http.StatusOK},
+		{Name: "Invalid ID", ID: "invalid", Body: `{"name":"product1","description":"good product","price":1000}`, Expected: "Bad Request", ExpectedStatus: http.StatusBadRequest},
+		{Name: "Missing price", ID: "1", Body: `{"name":"product1","description":"good product"}`, Expected: "Bad Request", ExpectedStatus: http.StatusBadRequest},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			req := httptest.NewRequest("PUT", "/products/"+tt.ID, strings.NewReader(tt.Body))
+			w := httptest.NewRecorder()
+			req.SetPathValue("id", tt.ID)
+			handlers.ProductUpdate(w, req)
+			resp := w.Result()
+			assert.Equal(t, tt.ExpectedStatus, resp.StatusCode)
+			assert.Equal(t, tt.Expected, strings.TrimSpace(w.Body.String()))
+		})
+	}
+}

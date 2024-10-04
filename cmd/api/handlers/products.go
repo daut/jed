@@ -106,14 +106,14 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 	idParam := r.PathValue("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		handler.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
 	var input struct {
-		Name        string  `json:"name"`
-		Description string  `json:"description"`
-		Price       float64 `json:"price"`
+		Name        *string  `json:"name"`
+		Description *string  `json:"description"`
+		Price       *float64 `json:"price"`
 	}
 
 	err = json.NewDecoder(r.Body).Decode(&input)
@@ -122,24 +122,29 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	price, err := utils.ConvertToPGNumeric(input.Price)
+	if input.Name == nil || input.Description == nil || input.Price == nil {
+		handler.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	price, err := utils.ConvertToPGNumeric(*input.Price)
 	if err != nil {
 		handler.ClientError(w, http.StatusBadRequest)
 		return
 	}
 	args := &db.UpdateProductParams{
-		Name:        pgtype.Text{String: input.Name, Valid: true},
-		Description: pgtype.Text{String: input.Description, Valid: true},
+		Name:        pgtype.Text{String: *input.Name, Valid: true},
+		Description: pgtype.Text{String: *input.Description, Valid: true},
 		Price:       *price,
 		ID:          int32(id),
 	}
-	_, err = handler.Queries.UpdateProduct(r.Context(), *args)
+	product, err := handler.Queries.UpdateProduct(r.Context(), *args)
 	if err != nil {
 		handler.ServerError(w, err)
 		return
 	}
 
-	w.Write([]byte("Product Update"))
+	handler.WriteJSON(w, http.StatusOK, product, nil)
 }
 
 func (handler *Handler) ProductDelete(w http.ResponseWriter, r *http.Request) {
