@@ -155,3 +155,38 @@ func TestProductUpdate(t *testing.T) {
 		})
 	}
 }
+
+func TestProductDelete(t *testing.T) {
+	t.Parallel()
+	queries := []string{"insert into products (name, description, price) values ('product1', 'good product', 1000)"}
+	container := testutils.NewDBContainer(t, queries)
+	defer gnomock.Stop(container)
+
+	conn := testutils.NewDBConn(t, container)
+	defer conn.Close(context.Background())
+
+	handlers := New(db.New(conn), utils.NewLogger())
+
+	tests := []struct {
+		Name           string
+		ID             string
+		Expected       string
+		ExpectedStatus int
+	}{
+		{Name: "Delete product", ID: "1", Expected: "null", ExpectedStatus: http.StatusNoContent},
+		{Name: "Product does not exist", ID: "2", Expected: "Not Found", ExpectedStatus: http.StatusNotFound},
+		{Name: "Invalid ID", ID: "invalid", Expected: "Bad Request", ExpectedStatus: http.StatusBadRequest},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			req := httptest.NewRequest("DELETE", "/products/"+tt.ID, nil)
+			w := httptest.NewRecorder()
+			req.SetPathValue("id", tt.ID)
+			handlers.ProductDelete(w, req)
+			resp := w.Result()
+			assert.Equal(t, tt.ExpectedStatus, resp.StatusCode)
+			assert.Equal(t, tt.Expected, strings.TrimSpace(w.Body.String()))
+		})
+	}
+}
