@@ -35,7 +35,6 @@ func NewDBConn(t *testing.T, container *gnomock.Container) *pgx.Conn {
 	ctx := context.Background()
 	port := container.DefaultPort()
 	connectionString := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", user, password, container.Host, port, databaseName)
-	fmt.Println(connectionString)
 	conn, err := pgx.Connect(ctx, connectionString)
 	if err != nil {
 		t.Fatal(err)
