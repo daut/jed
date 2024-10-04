@@ -8,6 +8,12 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Admin struct {
+	ID       int32       `json:"id"`
+	Username pgtype.Text `json:"username"`
+	Password pgtype.Text `json:"password"`
+}
+
 type Product struct {
 	ID          int32          `json:"id"`
 	Name        pgtype.Text    `json:"name"`

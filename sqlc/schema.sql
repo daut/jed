@@ -4,3 +4,9 @@ CREATE TABLE products (
   description TEXT,
   price DECIMAL(10, 2)
 );
+
+CREATE TABLE admins (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(255),
+  password VARCHAR(255)
+);
