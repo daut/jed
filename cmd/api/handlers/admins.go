@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/daut/simpshop/db"
+	db "github.com/daut/jed/sqlc"
 )
 
 func (h *Handler) AdminRead(w http.ResponseWriter, r *http.Request) {

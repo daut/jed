@@ -9,7 +9,7 @@ import (
 
 func main() {
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, "user=daut dbname=simpshop sslmode=verify-full")
+	conn, err := pgx.Connect(ctx, "user=daut dbname=jed sslmode=verify-full")
 	if err != nil {
 		panic(err)
 	}

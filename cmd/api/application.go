@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 
-	"github.com/daut/simpshop/cmd/api/router"
-	"github.com/daut/simpshop/db"
-	"github.com/daut/simpshop/internal/utils"
+	"github.com/daut/jed/cmd/api/router"
+	"github.com/daut/jed/internal/utils"
+	db "github.com/daut/jed/sqlc"
 	"github.com/jackc/pgx/v5"
 )
 

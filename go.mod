@@ -1,4 +1,4 @@
-module github.com/daut/simpshop
+module github.com/daut/jed
 
 go 1.22.4
 

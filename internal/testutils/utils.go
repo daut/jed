@@ -10,9 +10,9 @@ import (
 	"github.com/orlangure/gnomock/preset/postgres"
 )
 
-var user = "test"
-var password = "test"
-var databaseName = "test_shop"
+var user = "jed"
+var password = "jed"
+var databaseName = "jed_shop"
 
 func NewDBContainer(t *testing.T, queries []string) *gnomock.Container {
 	t.Helper()
@@ -20,7 +20,7 @@ func NewDBContainer(t *testing.T, queries []string) *gnomock.Container {
 		postgres.WithUser(user, password),
 		postgres.WithDatabase(databaseName),
 		postgres.WithQueries(queries...),
-		postgres.WithQueriesFile("../../../sqlc/schema.sql"),
+		postgres.WithQueriesFile("../../../db/schema.sql"),
 		postgres.WithTimezone("Europe/Belgrade"),
 	)
 	container, err := gnomock.Start(p)

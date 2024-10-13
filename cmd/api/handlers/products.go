@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/daut/simpshop/db"
-	"github.com/daut/simpshop/internal/utils"
+	"github.com/daut/jed/internal/utils"
+	db "github.com/daut/jed/sqlc"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -33,7 +33,7 @@ func (handler *Handler) ProductCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	args := &db.CreateProductParams{
-		Name:        pgtype.Text{String: input.Name, Valid: true},
+		Name:        input.Name,
 		Description: pgtype.Text{String: input.Description, Valid: true},
 		Price:       *price,
 	}
@@ -133,7 +133,7 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	args := &db.UpdateProductParams{
-		Name:        pgtype.Text{String: *input.Name, Valid: true},
+		Name:        *input.Name,
 		Description: pgtype.Text{String: *input.Description, Valid: true},
 		Price:       *price,
 		ID:          int32(id),

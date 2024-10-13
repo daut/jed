@@ -3,9 +3,9 @@ package router
 import (
 	"net/http"
 
-	"github.com/daut/simpshop/cmd/api/handlers"
-	"github.com/daut/simpshop/db"
-	"github.com/daut/simpshop/internal/utils"
+	"github.com/daut/jed/cmd/api/handlers"
+	"github.com/daut/jed/internal/utils"
+	db "github.com/daut/jed/sqlc"
 )
 
 func New(queries *db.Queries, logger *utils.Logger) http.Handler {

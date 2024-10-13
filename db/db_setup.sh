@@ -1,4 +1,4 @@
-DB_NAME="simpshop"
+DB_NAME="jed"
 
 # create a setup function but print all errors and wrap everything in a transaction
 setup_database() {

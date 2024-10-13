@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/daut/simpshop/db"
-	"github.com/daut/simpshop/internal/assert"
-	"github.com/daut/simpshop/internal/testutils"
-	"github.com/daut/simpshop/internal/utils"
+	"github.com/daut/jed/internal/assert"
+	"github.com/daut/jed/internal/testutils"
+	"github.com/daut/jed/internal/utils"
+	db "github.com/daut/jed/sqlc"
 	"github.com/orlangure/gnomock"
 )
 
