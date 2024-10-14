@@ -10,19 +10,14 @@ import (
 )
 
 const getAdmin = `-- name: GetAdmin :one
-SELECT id, username FROM admins
-WHERE id = $1
+SELECT id, username, password FROM admins
+WHERE username = $1
 `
 
-type GetAdminRow struct {
-	ID       int32  `json:"id"`
-	Username string `json:"username"`
-}
-
-func (q *Queries) GetAdmin(ctx context.Context, id int32) (GetAdminRow, error) {
-	row := q.db.QueryRow(ctx, getAdmin, id)
-	var i GetAdminRow
-	err := row.Scan(&i.ID, &i.Username)
+func (q *Queries) GetAdmin(ctx context.Context, username string) (Admin, error) {
+	row := q.db.QueryRow(ctx, getAdmin, username)
+	var i Admin
+	err := row.Scan(&i.ID, &i.Username, &i.Password)
 	return i, err
 }
 

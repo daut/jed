@@ -18,5 +18,7 @@ func New(queries *db.Queries, logger *utils.Logger) http.Handler {
 	router.HandleFunc("DELETE /products/{id}", handlers.ProductDelete)
 
 	router.HandleFunc("GET /admins/{id}", handlers.AdminRead)
+
+	router.HandleFunc("POST /login", handlers.Login)
 	return router
 }

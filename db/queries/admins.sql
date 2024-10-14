@@ -1,6 +1,6 @@
 -- name: GetAdmin :one
-SELECT id, username FROM admins
-WHERE id = $1;
+SELECT * FROM admins
+WHERE username = $1;
 
 -- name: ListAdmins :many
 SELECT id, username FROM admins

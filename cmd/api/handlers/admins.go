@@ -12,13 +12,10 @@ import (
 func (h *Handler) AdminRead(w http.ResponseWriter, r *http.Request) {
 	// Needs admin authentication
 
-	idParam := r.PathValue("id")
-	id, err := strconv.Atoi(idParam)
-	if err != nil {
-		h.ClientError(w, http.StatusBadRequest)
-		return
-	}
-	admin, err := h.Queries.GetAdmin(r.Context(), int32(id))
+	username := r.PathValue("username")
+	// TODO: validate username
+
+	admin, err := h.Queries.GetAdmin(r.Context(), username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			h.NotFound(w)
