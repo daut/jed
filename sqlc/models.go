@@ -22,7 +22,7 @@ type Product struct {
 }
 
 type Token struct {
-	Hash    []byte             `json:"hash"`
-	AdminID int32              `json:"admin_id"`
-	Expiry  pgtype.Timestamptz `json:"expiry"`
+	Hash      []byte             `json:"hash"`
+	AdminID   int32              `json:"admin_id"`
+	ExpiresAt pgtype.Timestamptz `json:"expires_at"`
 }

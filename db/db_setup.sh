@@ -1,3 +1,5 @@
+#!/bin/bash
+
 DB_NAME="jed"
 
 # create a setup function but print all errors and wrap everything in a transaction
