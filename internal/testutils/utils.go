@@ -16,6 +16,7 @@ var databaseName = "jed_shop"
 
 func NewDBContainer(t *testing.T, queries []string) *gnomock.Container {
 	t.Helper()
+	queries = append([]string{"CREATE EXTENSION IF NOT EXISTS pgcrypto;"}, queries...)
 	p := postgres.Preset(
 		postgres.WithUser(user, password),
 		postgres.WithDatabase(databaseName),
