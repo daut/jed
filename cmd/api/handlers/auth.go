@@ -21,7 +21,7 @@ func (handler *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		handler.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
@@ -30,22 +30,22 @@ func (handler *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	admin, err := handler.Queries.GetAdmin(r.Context(), input.Username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			handler.ClientError(w, http.StatusUnauthorized)
+			handler.Response.ClientError(w, http.StatusUnauthorized)
 		} else {
-			handler.ServerError(w, err)
+			handler.Response.ServerError(w, err)
 		}
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(input.Password))
 	if err != nil {
-		handler.ClientError(w, http.StatusUnauthorized)
+		handler.Response.ClientError(w, http.StatusUnauthorized)
 		return
 	}
 
 	token, err := tokens.GenerateToken(admin.ID, 72*time.Hour)
 	if err != nil {
-		handler.ServerError(w, err)
+		handler.Response.ServerError(w, err)
 		return
 	}
 
@@ -56,14 +56,14 @@ func (handler *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = handler.Queries.SaveToken(r.Context(), *args)
 	if err != nil {
-		handler.ServerError(w, err)
+		handler.Response.ServerError(w, err)
 		return
 	}
 
-	handler.WriteJSON(w, http.StatusCreated, token, nil)
+	handler.Response.WriteJSON(w, http.StatusCreated, token, nil)
 }
 
 func (handler *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	// TODO: implement
-	handler.WriteJSON(w, http.StatusOK, nil, nil)
+	handler.Response.WriteJSON(w, http.StatusOK, nil, nil)
 }

@@ -23,13 +23,13 @@ func (handler *Handler) ProductCreate(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		handler.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
 	price, err := utils.ConvertToPGNumeric(input.Price)
 	if err != nil {
-		handler.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, http.StatusBadRequest)
 		return
 	}
 	args := &db.CreateProductParams{
@@ -39,31 +39,31 @@ func (handler *Handler) ProductCreate(w http.ResponseWriter, r *http.Request) {
 	}
 	prod, err := handler.Queries.CreateProduct(r.Context(), *args)
 	if err != nil {
-		handler.ServerError(w, err)
+		handler.Response.ServerError(w, err)
 		return
 	}
 
-	handler.WriteJSON(w, http.StatusCreated, prod, nil)
+	handler.Response.WriteJSON(w, http.StatusCreated, prod, nil)
 }
 
 func (handler *Handler) ProductRead(w http.ResponseWriter, r *http.Request) {
 	idParam := r.PathValue("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		handler.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, http.StatusBadRequest)
 		return
 	}
 	prod, err := handler.Queries.GetProduct(r.Context(), int32(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			handler.NotFound(w)
+			handler.Response.NotFound(w)
 		} else {
-			handler.ServerError(w, err)
+			handler.Response.ServerError(w, err)
 		}
 		return
 	}
 
-	handler.WriteJSON(w, http.StatusOK, prod, nil)
+	handler.Response.WriteJSON(w, http.StatusOK, prod, nil)
 }
 
 func (handler *Handler) ProductList(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +74,7 @@ func (handler *Handler) ProductList(w http.ResponseWriter, r *http.Request) {
 
 	page, err := strconv.Atoi(pageParam)
 	if err != nil || page < 1 {
-		handler.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
@@ -85,19 +85,19 @@ func (handler *Handler) ProductList(w http.ResponseWriter, r *http.Request) {
 	products, err := handler.Queries.GetProducts(r.Context(), *args)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			handler.NotFound(w)
+			handler.Response.NotFound(w)
 		} else {
-			handler.ServerError(w, err)
+			handler.Response.ServerError(w, err)
 		}
 		return
 	}
 
 	if len(products) == 0 {
-		handler.NotFound(w)
+		handler.Response.NotFound(w)
 		return
 	}
 
-	handler.WriteJSON(w, http.StatusOK, products, nil)
+	handler.Response.WriteJSON(w, http.StatusOK, products, nil)
 }
 
 func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
@@ -106,7 +106,7 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 	idParam := r.PathValue("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		handler.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
@@ -118,18 +118,18 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		handler.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
 	if input.Name == nil || input.Description == nil || input.Price == nil {
-		handler.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
 	price, err := utils.ConvertToPGNumeric(*input.Price)
 	if err != nil {
-		handler.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, http.StatusBadRequest)
 		return
 	}
 	args := &db.UpdateProductParams{
@@ -140,11 +140,11 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 	product, err := handler.Queries.UpdateProduct(r.Context(), *args)
 	if err != nil {
-		handler.ServerError(w, err)
+		handler.Response.ServerError(w, err)
 		return
 	}
 
-	handler.WriteJSON(w, http.StatusOK, product, nil)
+	handler.Response.WriteJSON(w, http.StatusOK, product, nil)
 }
 
 func (handler *Handler) ProductDelete(w http.ResponseWriter, r *http.Request) {
@@ -154,21 +154,21 @@ func (handler *Handler) ProductDelete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		handler.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
 	prod, err := handler.Queries.DeleteProduct(r.Context(), int32(id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			handler.NotFound(w)
+			handler.Response.NotFound(w)
 		} else {
-			handler.ServerError(w, err)
+			handler.Response.ServerError(w, err)
 		}
 		return
 	}
 
 	handler.Logger.Info.Printf("Product %v deleted", prod.Name)
 
-	handler.WriteJSON(w, http.StatusNoContent, nil, nil)
+	handler.Response.WriteJSON(w, http.StatusNoContent, nil, nil)
 }

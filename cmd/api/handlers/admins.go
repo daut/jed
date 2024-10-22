@@ -18,14 +18,14 @@ func (h *Handler) AdminRead(w http.ResponseWriter, r *http.Request) {
 	admin, err := h.Queries.GetAdmin(r.Context(), username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			h.NotFound(w)
+			h.Response.NotFound(w)
 		} else {
-			h.ServerError(w, err)
+			h.Response.ServerError(w, err)
 		}
 		return
 	}
 
-	h.WriteJSON(w, http.StatusOK, admin, nil)
+	h.Response.WriteJSON(w, http.StatusOK, admin, nil)
 }
 
 func (h *Handler) AdminList(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +38,7 @@ func (h *Handler) AdminList(w http.ResponseWriter, r *http.Request) {
 
 	page, err := strconv.Atoi(pageParam)
 	if err != nil || page < 1 {
-		h.ClientError(w, http.StatusBadRequest)
+		h.Response.ClientError(w, http.StatusBadRequest)
 		return
 	}
 
@@ -49,17 +49,17 @@ func (h *Handler) AdminList(w http.ResponseWriter, r *http.Request) {
 	admins, err := h.Queries.ListAdmins(r.Context(), *args)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			h.NotFound(w)
+			h.Response.NotFound(w)
 		} else {
-			h.ServerError(w, err)
+			h.Response.ServerError(w, err)
 		}
 		return
 	}
 
 	if len(admins) == 0 {
-		h.NotFound(w)
+		h.Response.NotFound(w)
 		return
 	}
 
-	h.WriteJSON(w, http.StatusOK, admins, nil)
+	h.Response.WriteJSON(w, http.StatusOK, admins, nil)
 }
