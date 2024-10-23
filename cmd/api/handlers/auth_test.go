@@ -8,8 +8,6 @@ import (
 
 	"github.com/daut/jed/internal/assert"
 	"github.com/daut/jed/internal/testutils"
-	"github.com/daut/jed/internal/utils"
-	db "github.com/daut/jed/sqlc"
 	"github.com/orlangure/gnomock"
 )
 
@@ -22,7 +20,7 @@ func TestLogin(t *testing.T) {
 	conn := testutils.NewDBConn(t, container)
 	defer conn.Close(context.Background())
 
-	handlers := New(db.New(conn), utils.NewLogger())
+	handlers := initHandlers(conn)
 
 	tests := []struct {
 		Name           string
