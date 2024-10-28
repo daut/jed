@@ -24,7 +24,7 @@ func TestAuth(t *testing.T) {
 	}
 	dbr := testutils.NewDBResources(t, queries)
 	defer dbr.Close(t)
-	res := helpers.NewTestResources(dbr.Conn)
+	res := helpers.NewTestResources(dbr.Pool)
 	middleware := New(res.Queries, res.Logger, res.Response)
 	middleware.Queries.SaveToken(context.Background(), sqlc.SaveTokenParams{
 		Hash:      token.Hash,

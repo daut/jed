@@ -3,7 +3,7 @@ package helpers
 import (
 	"github.com/daut/jed/internal/utils"
 	db "github.com/daut/jed/sqlc"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type TestResources struct {
@@ -12,7 +12,7 @@ type TestResources struct {
 	Response *Response
 }
 
-func NewTestResources(conn *pgx.Conn) *TestResources {
+func NewTestResources(conn *pgxpool.Pool) *TestResources {
 	queries := db.New(conn)
 	logger := utils.NewLogger()
 	responseHelper := NewResponse(logger)

@@ -14,7 +14,7 @@ func TestLogin(t *testing.T) {
 	queries := []string{"insert into admins (username, password) values ('admin', crypt('password', gen_salt('bf')));"}
 	dbr := testutils.NewDBResources(t, queries)
 	defer dbr.Close(t)
-	handlers := initHandlers(dbr.Conn)
+	handlers := initHandlers(dbr.Pool)
 
 	tests := []struct {
 		Name           string

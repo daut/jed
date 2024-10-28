@@ -4,11 +4,11 @@ import (
 	"github.com/daut/jed/cmd/api/helpers"
 	"github.com/daut/jed/internal/utils"
 	db "github.com/daut/jed/sqlc"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func initHandlers(conn *pgx.Conn) *Handler {
-	queries := db.New(conn)
+func initHandlers(pool *pgxpool.Pool) *Handler {
+	queries := db.New(pool)
 	logger := utils.NewLogger()
 	responseHelper := helpers.NewResponse(logger)
 	handlers := New(queries, logger, responseHelper)

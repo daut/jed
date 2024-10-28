@@ -4,16 +4,15 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func main() {
-	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, "user=daut dbname=jed sslmode=verify-full")
+	conn, err := pgxpool.New(context.Background(), "user=daut dbname=jed sslmode=verify-full")
 	if err != nil {
 		panic(err)
 	}
-	defer conn.Close(ctx)
+	defer conn.Close()
 
 	app := NewApp(conn)
 

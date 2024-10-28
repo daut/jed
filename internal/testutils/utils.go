@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/orlangure/gnomock"
 	"github.com/orlangure/gnomock/preset/postgres"
 )
@@ -16,19 +16,19 @@ var databaseName = "jed_shop"
 
 type DBResources struct {
 	Container *gnomock.Container
-	Conn      *pgx.Conn
+	Pool      *pgxpool.Pool
 }
 
 func NewDBResources(t *testing.T, queries []string) *DBResources {
 	t.Helper()
 	container := NewDBContainer(t, queries)
-	conn := NewDBConn(t, container)
-	return &DBResources{Container: container, Conn: conn}
+	pool := NewDBPool(t, container)
+	return &DBResources{Container: container, Pool: pool}
 }
 
 func (dbr *DBResources) Close(t *testing.T) {
 	t.Helper()
-	dbr.Conn.Close(context.Background())
+	dbr.Pool.Close()
 	gnomock.Stop(dbr.Container)
 }
 
@@ -49,14 +49,14 @@ func NewDBContainer(t *testing.T, queries []string) *gnomock.Container {
 	return container
 }
 
-func NewDBConn(t *testing.T, container *gnomock.Container) *pgx.Conn {
+func NewDBPool(t *testing.T, container *gnomock.Container) *pgxpool.Pool {
 	t.Helper()
 	ctx := context.Background()
 	port := container.DefaultPort()
 	connectionString := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", user, password, container.Host, port, databaseName)
-	conn, err := pgx.Connect(ctx, connectionString)
+	pool, err := pgxpool.New(ctx, connectionString)
 	if err != nil {
 		t.Fatal(err)
 	}
-	return conn
+	return pool
 }

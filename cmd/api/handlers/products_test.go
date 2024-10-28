@@ -15,7 +15,7 @@ func TestProductRead(t *testing.T) {
 	queries := []string{"insert into products (name, description, price) values ('product1', 'good product', 100)"}
 	dbr := testutils.NewDBResources(t, queries)
 	defer dbr.Close(t)
-	handlers := initHandlers(dbr.Conn)
+	handlers := initHandlers(dbr.Pool)
 
 	tests := []struct {
 		Name           string
@@ -46,7 +46,7 @@ func TestProductList(t *testing.T) {
 	queries := []string{"insert into products (name, description, price) values ('product1', 'good product', 100)"}
 	dbr := testutils.NewDBResources(t, queries)
 	defer dbr.Close(t)
-	handlers := initHandlers(dbr.Conn)
+	handlers := initHandlers(dbr.Pool)
 
 	tests := []struct {
 		Name           string
@@ -80,7 +80,7 @@ func TestProductCreate(t *testing.T) {
 	queries := []string{}
 	dbr := testutils.NewDBResources(t, queries)
 	defer dbr.Close(t)
-	handlers := initHandlers(dbr.Conn)
+	handlers := initHandlers(dbr.Pool)
 
 	tests := []struct {
 		Name           string
@@ -109,7 +109,7 @@ func TestProductUpdate(t *testing.T) {
 	queries := []string{"insert into products (name, description, price) values ('product1', 'good product', 1000)"}
 	dbr := testutils.NewDBResources(t, queries)
 	defer dbr.Close(t)
-	handlers := initHandlers(dbr.Conn)
+	handlers := initHandlers(dbr.Pool)
 
 	tests := []struct {
 		Name           string
@@ -141,7 +141,7 @@ func TestProductDelete(t *testing.T) {
 	queries := []string{"insert into products (name, description, price) values ('product1', 'good product', 1000)"}
 	dbr := testutils.NewDBResources(t, queries)
 	defer dbr.Close(t)
-	handlers := initHandlers(dbr.Conn)
+	handlers := initHandlers(dbr.Pool)
 
 	tests := []struct {
 		Name           string
