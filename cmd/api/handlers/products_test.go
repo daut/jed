@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -9,19 +8,14 @@ import (
 
 	"github.com/daut/jed/internal/assert"
 	"github.com/daut/jed/internal/testutils"
-	"github.com/orlangure/gnomock"
 )
 
 func TestProductRead(t *testing.T) {
 	t.Parallel()
 	queries := []string{"insert into products (name, description, price) values ('product1', 'good product', 100)"}
-	container := testutils.NewDBContainer(t, queries)
-	defer gnomock.Stop(container)
-
-	conn := testutils.NewDBConn(t, container)
-	defer conn.Close(context.Background())
-
-	handlers := initHandlers(conn)
+	dbr := testutils.NewDBResources(t, queries)
+	defer dbr.Close(t)
+	handlers := initHandlers(dbr.Conn)
 
 	tests := []struct {
 		Name           string
@@ -50,13 +44,9 @@ func TestProductRead(t *testing.T) {
 func TestProductList(t *testing.T) {
 	t.Parallel()
 	queries := []string{"insert into products (name, description, price) values ('product1', 'good product', 100)"}
-	container := testutils.NewDBContainer(t, queries)
-	defer gnomock.Stop(container)
-
-	conn := testutils.NewDBConn(t, container)
-	defer conn.Close(context.Background())
-
-	handlers := initHandlers(conn)
+	dbr := testutils.NewDBResources(t, queries)
+	defer dbr.Close(t)
+	handlers := initHandlers(dbr.Conn)
 
 	tests := []struct {
 		Name           string
@@ -88,13 +78,9 @@ func TestProductList(t *testing.T) {
 func TestProductCreate(t *testing.T) {
 	t.Parallel()
 	queries := []string{}
-	container := testutils.NewDBContainer(t, queries)
-	defer gnomock.Stop(container)
-
-	conn := testutils.NewDBConn(t, container)
-	defer conn.Close(context.Background())
-
-	handlers := initHandlers(conn)
+	dbr := testutils.NewDBResources(t, queries)
+	defer dbr.Close(t)
+	handlers := initHandlers(dbr.Conn)
 
 	tests := []struct {
 		Name           string
@@ -121,13 +107,9 @@ func TestProductCreate(t *testing.T) {
 func TestProductUpdate(t *testing.T) {
 	t.Parallel()
 	queries := []string{"insert into products (name, description, price) values ('product1', 'good product', 1000)"}
-	container := testutils.NewDBContainer(t, queries)
-	defer gnomock.Stop(container)
-
-	conn := testutils.NewDBConn(t, container)
-	defer conn.Close(context.Background())
-
-	handlers := initHandlers(conn)
+	dbr := testutils.NewDBResources(t, queries)
+	defer dbr.Close(t)
+	handlers := initHandlers(dbr.Conn)
 
 	tests := []struct {
 		Name           string
@@ -157,13 +139,9 @@ func TestProductUpdate(t *testing.T) {
 func TestProductDelete(t *testing.T) {
 	t.Parallel()
 	queries := []string{"insert into products (name, description, price) values ('product1', 'good product', 1000)"}
-	container := testutils.NewDBContainer(t, queries)
-	defer gnomock.Stop(container)
-
-	conn := testutils.NewDBConn(t, container)
-	defer conn.Close(context.Background())
-
-	handlers := initHandlers(conn)
+	dbr := testutils.NewDBResources(t, queries)
+	defer dbr.Close(t)
+	handlers := initHandlers(dbr.Conn)
 
 	tests := []struct {
 		Name           string

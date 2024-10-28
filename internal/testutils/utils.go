@@ -14,6 +14,24 @@ var user = "jed"
 var password = "jed"
 var databaseName = "jed_shop"
 
+type DBResources struct {
+	Container *gnomock.Container
+	Conn      *pgx.Conn
+}
+
+func NewDBResources(t *testing.T, queries []string) *DBResources {
+	t.Helper()
+	container := NewDBContainer(t, queries)
+	conn := NewDBConn(t, container)
+	return &DBResources{Container: container, Conn: conn}
+}
+
+func (dbr *DBResources) Close(t *testing.T) {
+	t.Helper()
+	dbr.Conn.Close(context.Background())
+	gnomock.Stop(dbr.Container)
+}
+
 func NewDBContainer(t *testing.T, queries []string) *gnomock.Container {
 	t.Helper()
 	queries = append([]string{"CREATE EXTENSION IF NOT EXISTS pgcrypto;"}, queries...)

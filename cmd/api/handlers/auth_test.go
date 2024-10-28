@@ -1,26 +1,20 @@
 package handlers
 
 import (
-	"context"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
 	"github.com/daut/jed/internal/assert"
 	"github.com/daut/jed/internal/testutils"
-	"github.com/orlangure/gnomock"
 )
 
 func TestLogin(t *testing.T) {
 	t.Parallel()
 	queries := []string{"insert into admins (username, password) values ('admin', crypt('password', gen_salt('bf')));"}
-	container := testutils.NewDBContainer(t, queries)
-	defer gnomock.Stop(container)
-
-	conn := testutils.NewDBConn(t, container)
-	defer conn.Close(context.Background())
-
-	handlers := initHandlers(conn)
+	dbr := testutils.NewDBResources(t, queries)
+	defer dbr.Close(t)
+	handlers := initHandlers(dbr.Conn)
 
 	tests := []struct {
 		Name           string
