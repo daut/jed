@@ -10,7 +10,6 @@ import (
 )
 
 func New(queries *db.Queries, logger *utils.Logger) http.Handler {
-	handlers := handlers.New(queries, logger)
 	responseHelper := helpers.NewResponse(logger)
 	handlers := handlers.New(queries, logger, responseHelper)
 	router := http.NewServeMux()

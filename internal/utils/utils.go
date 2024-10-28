@@ -15,3 +15,7 @@ func ConvertToPGNumeric(number float64) (*pgtype.Numeric, error) {
 	}
 	return value, nil
 }
+
+func StrPtr(s string) *string {
+	return &s
+}
