@@ -30,6 +30,7 @@ func (mw *Middleware) Auth(next http.Handler) http.Handler {
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				mw.Response.ClientError(w, http.StatusUnauthorized)
+				mw.Response.NotFound(w)
 			} else {
 				mw.Response.ServerError(w, err)
 			}

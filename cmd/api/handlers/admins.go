@@ -9,6 +9,11 @@ import (
 	db "github.com/daut/jed/sqlc"
 )
 
+type Admin struct {
+	ID       int32  `json:"id"`
+	Username string `json:"username"`
+}
+
 func (h *Handler) AdminRead(w http.ResponseWriter, r *http.Request) {
 	// Needs admin authentication
 
@@ -25,7 +30,12 @@ func (h *Handler) AdminRead(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Response.WriteJSON(w, http.StatusOK, admin, nil)
+	response := &Admin{
+		ID:       admin.ID,
+		Username: admin.Username,
+	}
+
+	h.Response.WriteJSON(w, http.StatusOK, response, nil)
 }
 
 func (h *Handler) AdminList(w http.ResponseWriter, r *http.Request) {

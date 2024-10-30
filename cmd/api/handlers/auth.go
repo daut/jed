@@ -30,7 +30,7 @@ func (handler *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	admin, err := handler.Queries.GetAdmin(r.Context(), input.Username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			handler.Response.ClientError(w, http.StatusUnauthorized)
+			handler.Response.NotFound(w)
 		} else {
 			handler.Response.ServerError(w, err)
 		}
