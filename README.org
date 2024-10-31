@@ -1,2 +1,3 @@
-* JED - simple headless web shop
+#+TITLE: JED: A Simple Headless Web Shop
+
 JED (Serbian Cyrillic: Једноставан Е-Дућан) is a simple headless web shop.
