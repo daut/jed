@@ -24,8 +24,8 @@ func TestProductRead(t *testing.T) {
 		ExpectedStatus int
 	}{
 		{Name: "Product exists", ID: "1", Expected: `{"id":1,"name":"product1","description":"good product","price":100.00}`, ExpectedStatus: http.StatusOK},
-		{Name: "Product does not exist", ID: "2", Expected: "Not Found", ExpectedStatus: http.StatusNotFound},
-		{Name: "Invalid ID", ID: "invalid", Expected: "Bad Request", ExpectedStatus: http.StatusBadRequest},
+		{Name: "Product does not exist", ID: "2", Expected: `{"message":"the requested resource could not be found"}`, ExpectedStatus: http.StatusNotFound},
+		{Name: "Invalid ID", ID: "invalid", Expected: `{"message":"invalid id"}`, ExpectedStatus: http.StatusBadRequest},
 	}
 
 	for _, tt := range tests {
@@ -56,10 +56,10 @@ func TestProductList(t *testing.T) {
 	}{
 		{Name: "List products", Offset: "1", Expected: `[{"id":1,"name":"product1","description":"good product","price":100.00}]`, ExpectedStatus: http.StatusOK},
 		{Name: "No offset", Offset: "", Expected: `[{"id":1,"name":"product1","description":"good product","price":100.00}]`, ExpectedStatus: http.StatusOK},
-		{Name: "Invalid offset", Offset: "invalid", Expected: "Bad Request", ExpectedStatus: http.StatusBadRequest},
-		{Name: "No products", Offset: "5", Expected: "Not Found", ExpectedStatus: http.StatusNotFound},
-		{Name: "Negative offset", Offset: "-1", Expected: "Bad Request", ExpectedStatus: http.StatusBadRequest},
-		{Name: "Zero offset", Offset: "0", Expected: "Bad Request", ExpectedStatus: http.StatusBadRequest},
+		{Name: "Invalid offset", Offset: "invalid", Expected: `{"message":"invalid page"}`, ExpectedStatus: http.StatusBadRequest},
+		{Name: "No products", Offset: "5", Expected: `{"message":"the requested resource could not be found"}`, ExpectedStatus: http.StatusNotFound},
+		{Name: "Negative offset", Offset: "-1", Expected: `{"message":"invalid page"}`, ExpectedStatus: http.StatusBadRequest},
+		{Name: "Zero offset", Offset: "0", Expected: `{"message":"invalid page"}`, ExpectedStatus: http.StatusBadRequest},
 	}
 
 	for _, tt := range tests {
@@ -89,7 +89,7 @@ func TestProductCreate(t *testing.T) {
 		ExpectedStatus int
 	}{
 		{Name: "Valid product", Body: `{"name":"product1","description":"good product","price":100}`, Expected: `{"id":1,"name":"product1","description":"good product","price":100.00}`, ExpectedStatus: http.StatusCreated},
-		{Name: "Invalid JSON", Body: `{"name":"product1"`, Expected: "Bad Request", ExpectedStatus: http.StatusBadRequest},
+		{Name: "Invalid JSON", Body: `{"name":"product1"`, Expected: `{"message":"invalid input"}`, ExpectedStatus: http.StatusBadRequest},
 	}
 
 	for _, tt := range tests {
@@ -119,8 +119,8 @@ func TestProductUpdate(t *testing.T) {
 		ExpectedStatus int
 	}{
 		{Name: "Update price", ID: "1", Body: `{"name":"product1","description":"good product","price":1000}`, Expected: `{"id":1,"name":"product1","description":"good product","price":1000.00}`, ExpectedStatus: http.StatusOK},
-		{Name: "Invalid ID", ID: "invalid", Body: `{"name":"product1","description":"good product","price":1000}`, Expected: "Bad Request", ExpectedStatus: http.StatusBadRequest},
-		{Name: "Missing price", ID: "1", Body: `{"name":"product1","description":"good product"}`, Expected: "Bad Request", ExpectedStatus: http.StatusBadRequest},
+		{Name: "Invalid ID", ID: "invalid", Body: `{"name":"product1","description":"good product","price":1000}`, Expected: `{"message":"invalid id"}`, ExpectedStatus: http.StatusBadRequest},
+		{Name: "Missing price", ID: "1", Body: `{"name":"product1","description":"good product"}`, Expected: `{"message":"invalid input"}`, ExpectedStatus: http.StatusBadRequest},
 	}
 
 	for _, tt := range tests {
@@ -150,8 +150,8 @@ func TestProductDelete(t *testing.T) {
 		ExpectedStatus int
 	}{
 		{Name: "Delete product", ID: "1", Expected: "null", ExpectedStatus: http.StatusNoContent},
-		{Name: "Product does not exist", ID: "2", Expected: "Not Found", ExpectedStatus: http.StatusNotFound},
-		{Name: "Invalid ID", ID: "invalid", Expected: "Bad Request", ExpectedStatus: http.StatusBadRequest},
+		{Name: "Product does not exist", ID: "2", Expected: `{"message":"the requested resource could not be found"}`, ExpectedStatus: http.StatusNotFound},
+		{Name: "Invalid ID", ID: "invalid", Expected: `{"message":"invalid id"}`, ExpectedStatus: http.StatusBadRequest},
 	}
 
 	for _, tt := range tests {

@@ -19,6 +19,10 @@ func NewResponse(logger *utils.Logger) *Response {
 	}
 }
 
+type errorResponse struct {
+	Message string `json:"message"`
+}
+
 // Returns a 500 Internal Server Error response to the client
 func (h *Response) ServerError(w http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
@@ -27,13 +31,16 @@ func (h *Response) ServerError(w http.ResponseWriter, err error) {
 }
 
 // Returns a 400 Bad Request response to the client
-func (h *Response) ClientError(w http.ResponseWriter, status int) {
-	http.Error(w, http.StatusText(status), status)
+func (h *Response) ClientError(w http.ResponseWriter, msg string, status int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(&errorResponse{Message: msg})
 }
 
 // Returns a 404 Not Found response to the client
 func (h *Response) NotFound(w http.ResponseWriter) {
-	h.ClientError(w, http.StatusNotFound)
+	msg := "the requested resource could not be found"
+	h.ClientError(w, msg, http.StatusNotFound)
 }
 
 // Writes a JSON response to the client

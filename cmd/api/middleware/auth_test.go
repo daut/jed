@@ -42,7 +42,7 @@ func TestAuth(t *testing.T) {
 		ExpectedStatus int
 	}{
 		{Name: "Missing authorization header", Authorization: nil, ExpectedStatus: http.StatusBadRequest},
-		{Name: "Missing token", Authorization: utils.StrPtr("Bearer"), ExpectedStatus: http.StatusBadRequest},
+		{Name: "Missing token", Authorization: utils.StrPtr("Bearer"), ExpectedStatus: http.StatusUnauthorized},
 		{Name: "Invalid token", Authorization: utils.StrPtr("Bearer random"), ExpectedStatus: http.StatusUnauthorized},
 		{Name: "Valid token", Authorization: utils.StrPtr("Bearer " + token.PlainText), ExpectedStatus: http.StatusOK},
 	}

@@ -48,7 +48,7 @@ func (h *Handler) AdminList(w http.ResponseWriter, r *http.Request) {
 
 	page, err := strconv.Atoi(pageParam)
 	if err != nil || page < 1 {
-		h.Response.ClientError(w, http.StatusBadRequest)
+		h.Response.ClientError(w, "invalid page", http.StatusBadRequest)
 		return
 	}
 

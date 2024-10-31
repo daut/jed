@@ -23,13 +23,13 @@ func (handler *Handler) ProductCreate(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		handler.Response.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, "invalid input", http.StatusBadRequest)
 		return
 	}
 
 	price, err := utils.ConvertToPGNumeric(input.Price)
 	if err != nil {
-		handler.Response.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, "invalid price", http.StatusBadRequest)
 		return
 	}
 	args := &db.CreateProductParams{
@@ -50,7 +50,7 @@ func (handler *Handler) ProductRead(w http.ResponseWriter, r *http.Request) {
 	idParam := r.PathValue("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		handler.Response.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 	prod, err := handler.Queries.GetProduct(r.Context(), int32(id))
@@ -74,7 +74,7 @@ func (handler *Handler) ProductList(w http.ResponseWriter, r *http.Request) {
 
 	page, err := strconv.Atoi(pageParam)
 	if err != nil || page < 1 {
-		handler.Response.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, "invalid page", http.StatusBadRequest)
 		return
 	}
 
@@ -106,7 +106,7 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 	idParam := r.PathValue("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		handler.Response.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 
@@ -118,18 +118,18 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		handler.Response.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, "invalid input", http.StatusBadRequest)
 		return
 	}
 
 	if input.Name == nil || input.Description == nil || input.Price == nil {
-		handler.Response.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, "invalid input", http.StatusBadRequest)
 		return
 	}
 
 	price, err := utils.ConvertToPGNumeric(*input.Price)
 	if err != nil {
-		handler.Response.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, "invalid price", http.StatusBadRequest)
 		return
 	}
 	args := &db.UpdateProductParams{
@@ -154,7 +154,7 @@ func (handler *Handler) ProductDelete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		handler.Response.ClientError(w, http.StatusBadRequest)
+		handler.Response.ClientError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 

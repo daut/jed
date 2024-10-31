@@ -14,13 +14,13 @@ func (mw *Middleware) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			mw.Response.ClientError(w, http.StatusBadRequest)
+			mw.Response.ClientError(w, "missing authorization header", http.StatusBadRequest)
 			return
 		}
 
 		headerParts := strings.Split(authHeader, " ")
 		if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-			mw.Response.ClientError(w, http.StatusBadRequest)
+			mw.Response.ClientError(w, "invalid token", http.StatusUnauthorized)
 			return
 		}
 
@@ -29,8 +29,7 @@ func (mw *Middleware) Auth(next http.Handler) http.Handler {
 		token, err := mw.Queries.GetToken(r.Context(), hash[:])
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				mw.Response.ClientError(w, http.StatusUnauthorized)
-				mw.Response.NotFound(w)
+				mw.Response.ClientError(w, "invalid token", http.StatusUnauthorized)
 			} else {
 				mw.Response.ServerError(w, err)
 			}
@@ -38,7 +37,7 @@ func (mw *Middleware) Auth(next http.Handler) http.Handler {
 		}
 
 		if token.ExpiresAt.Time.Before(time.Now()) {
-			mw.Response.ClientError(w, http.StatusUnauthorized)
+			mw.Response.ClientError(w, "expired token", http.StatusUnauthorized)
 			return
 		}
 
