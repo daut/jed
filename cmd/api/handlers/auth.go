@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/daut/jed/internal/consts"
 	"github.com/daut/jed/internal/tokens"
+	"github.com/daut/jed/internal/validator"
 	db "github.com/daut/jed/sqlc"
 	"github.com/jackc/pgx/v5/pgtype"
 	"golang.org/x/crypto/bcrypt"
@@ -21,16 +23,21 @@ func (handler *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		handler.Response.ClientError(w, "invalid input", http.StatusBadRequest)
+		handler.Response.ClientError(w, consts.ErrInvalidInput, http.StatusBadRequest)
 		return
 	}
 
-	// TODO: validate username/password
+	v := validator.New()
+	v.IsNotEmpty(input.Username, "username", consts.ErrMissingField)
+	v.IsNotEmpty(input.Password, "password", consts.ErrMissingField)
+	if v.HasErrors() {
+		handler.Response.FailedValidation(w, v.Errors)
+	}
 
 	admin, err := handler.Queries.GetAdmin(r.Context(), input.Username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			handler.Response.ClientError(w, "invalid credentials", http.StatusUnauthorized)
+			handler.Response.ClientError(w, consts.ErrInvalidCreds, http.StatusUnauthorized)
 		} else {
 			handler.Response.ServerError(w, err)
 		}
@@ -39,7 +46,7 @@ func (handler *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(input.Password))
 	if err != nil {
-		handler.Response.ClientError(w, "invalid credentials", http.StatusUnauthorized)
+		handler.Response.ClientError(w, consts.ErrInvalidCreds, http.StatusUnauthorized)
 		return
 	}
 

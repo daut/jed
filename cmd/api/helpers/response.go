@@ -20,7 +20,8 @@ func NewResponse(logger *utils.Logger) *Response {
 }
 
 type errorResponse struct {
-	Message string `json:"message"`
+	Message string             `json:"message"`
+	Errors  *map[string]string `json:"errors,omitempty"`
 }
 
 // Returns a 500 Internal Server Error response to the client
@@ -30,11 +31,25 @@ func (h *Response) ServerError(w http.ResponseWriter, err error) {
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
 
-// Returns a 400 Bad Request response to the client
+// Returns a >= 400 and < 500 client error response to the client
 func (h *Response) ClientError(w http.ResponseWriter, msg string, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(&errorResponse{Message: msg})
+	resp := errorResponse{
+		Message: msg,
+	}
+	json.NewEncoder(w).Encode(resp)
+}
+
+// Returns a failed validation response to the client
+func (h *Response) FailedValidation(w http.ResponseWriter, errors map[string]string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusUnprocessableEntity)
+	resp := errorResponse{
+		Message: "one or more validation errors occurred",
+		Errors:  &errors,
+	}
+	json.NewEncoder(w).Encode(resp)
 }
 
 // Returns a 404 Not Found response to the client
