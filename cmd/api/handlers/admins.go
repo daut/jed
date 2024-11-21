@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/daut/jed/internal/consts"
+	"github.com/daut/jed/internal/validator"
 	db "github.com/daut/jed/sqlc"
 )
 
@@ -15,10 +17,14 @@ type Admin struct {
 }
 
 func (h *Handler) AdminRead(w http.ResponseWriter, r *http.Request) {
-	// Needs admin authentication
+	// TODO: Needs admin authentication
 
 	username := r.PathValue("username")
-	// TODO: validate username
+	v := validator.New()
+	v.IsNotEmpty(username, "username", consts.ErrMissingField)
+	if v.HasErrors() {
+		h.Response.FailedValidation(w, v.Errors)
+	}
 
 	admin, err := h.Queries.GetAdmin(r.Context(), username)
 	if err != nil {
@@ -39,7 +45,7 @@ func (h *Handler) AdminRead(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) AdminList(w http.ResponseWriter, r *http.Request) {
-	// Needs admin authentication
+	// TODO: Needs admin authentication
 
 	pageParam := r.URL.Query().Get("page")
 	if pageParam == "" {
