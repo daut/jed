@@ -71,6 +71,6 @@ func (handler *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement
+	// TODO: implement logout
 	handler.Response.WriteJSON(w, http.StatusOK, nil, nil)
 }
