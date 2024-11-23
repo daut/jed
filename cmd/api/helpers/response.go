@@ -34,6 +34,9 @@ func (h *Response) ServerError(w http.ResponseWriter, err error) {
 // Returns a >= 400 and < 500 client error response to the client
 func (h *Response) ClientError(w http.ResponseWriter, msg string, status int) {
 	w.Header().Set("Content-Type", "application/json")
+	if status == http.StatusUnauthorized {
+		w.Header().Set("WWW-Authenticate", "Bearer")
+	}
 	w.WriteHeader(status)
 	resp := errorResponse{
 		Message: msg,
