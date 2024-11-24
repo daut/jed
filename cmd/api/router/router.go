@@ -8,6 +8,7 @@ import (
 	"github.com/daut/jed/cmd/api/middleware"
 	"github.com/daut/jed/internal/utils"
 	db "github.com/daut/jed/sqlc"
+	"github.com/justinas/alice"
 )
 
 func New(queries *db.Queries, logger *utils.Logger) http.Handler {
@@ -17,14 +18,21 @@ func New(queries *db.Queries, logger *utils.Logger) http.Handler {
 
 	mw := middleware.New(queries, logger, responseHelper)
 
-	router.HandleFunc("POST /products", handlers.ProductCreate)
+	isAdmin := alice.New(mw.Auth, mw.RequireAdminUser)
+
+	// public
 	router.HandleFunc("GET /products", handlers.ProductList)
 	router.HandleFunc("GET /products/{id}", handlers.ProductRead)
-	router.HandleFunc("PUT /products/{id}", handlers.ProductUpdate)
-	router.HandleFunc("DELETE /products/{id}", handlers.ProductDelete)
-
-	router.Handle("GET /admins/{username}", mw.Auth(http.HandlerFunc(handlers.AdminRead)))
 
 	router.HandleFunc("POST /login", handlers.Login)
+
+	// admin
+	router.Handle("POST /products", isAdmin.ThenFunc(handlers.ProductCreate))
+	router.Handle("PUT /products/{id}", isAdmin.ThenFunc(handlers.ProductUpdate))
+	router.Handle("DELETE /products/{id}", isAdmin.ThenFunc(handlers.ProductDelete))
+
+	router.Handle("GET /admins/{username}", isAdmin.ThenFunc(handlers.AdminRead))
+	router.Handle("GET /admins", isAdmin.ThenFunc(handlers.AdminList))
+
 	return router
 }

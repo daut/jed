@@ -13,8 +13,6 @@ import (
 )
 
 func (handler *Handler) ProductCreate(w http.ResponseWriter, r *http.Request) {
-	// TODO: Needs admin authentication
-
 	var input struct {
 		Name        string  `json:"name"`
 		Description string  `json:"description"`
@@ -101,8 +99,6 @@ func (handler *Handler) ProductList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
-	// TODO: Needs admin authentication
-
 	idParam := r.PathValue("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
@@ -148,8 +144,6 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler *Handler) ProductDelete(w http.ResponseWriter, r *http.Request) {
-	// TODO: Needs admin authentication
-
 	idParam := r.PathValue("id")
 
 	id, err := strconv.Atoi(idParam)

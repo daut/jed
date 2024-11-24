@@ -17,8 +17,6 @@ type Admin struct {
 }
 
 func (h *Handler) AdminRead(w http.ResponseWriter, r *http.Request) {
-	// TODO: Needs admin authentication
-
 	username := r.PathValue("username")
 	v := validator.New()
 	v.IsNotEmpty(username, "username", consts.ErrMissingField)
@@ -45,8 +43,6 @@ func (h *Handler) AdminRead(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) AdminList(w http.ResponseWriter, r *http.Request) {
-	// TODO: Needs admin authentication
-
 	pageParam := r.URL.Query().Get("page")
 	if pageParam == "" {
 		pageParam = "1"
