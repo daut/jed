@@ -24,7 +24,7 @@ func New(queries *db.Queries, logger *utils.Logger) http.Handler {
 	router.HandleFunc("GET /products", handlers.ProductList)
 	router.HandleFunc("GET /products/{id}", handlers.ProductRead)
 
-	router.HandleFunc("POST /login", handlers.Login)
+	router.HandleFunc("POST /sessions", handlers.SessionCreate)
 
 	// admin
 	router.Handle("POST /products", isAdmin.ThenFunc(handlers.ProductCreate))

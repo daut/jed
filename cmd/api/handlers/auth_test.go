@@ -30,7 +30,7 @@ func TestLogin(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			req := httptest.NewRequest("POST", "/login", strings.NewReader(tt.Body))
 			w := httptest.NewRecorder()
-			handlers.Login(w, req)
+			handlers.SessionCreate(w, req)
 			resp := w.Result()
 			assert.Equal(t, tt.ExpectedStatus, resp.StatusCode)
 		})

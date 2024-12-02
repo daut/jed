@@ -15,7 +15,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (handler *Handler) Login(w http.ResponseWriter, r *http.Request) {
+func (handler *Handler) SessionCreate(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -70,7 +70,7 @@ func (handler *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	handler.Response.WriteJSON(w, http.StatusCreated, token, nil)
 }
 
-func (handler *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement logout
+func (handler *Handler) SessionDelete(w http.ResponseWriter, r *http.Request) {
+	// TODO: implement
 	handler.Response.WriteJSON(w, http.StatusOK, nil, nil)
 }
