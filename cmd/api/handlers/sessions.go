@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/daut/jed/internal/consts"
 	"github.com/daut/jed/internal/tokens"
 	"github.com/daut/jed/internal/validator"
+	"github.com/daut/jed/sqlc"
 	db "github.com/daut/jed/sqlc"
 	"github.com/jackc/pgx/v5/pgtype"
 	"golang.org/x/crypto/bcrypt"
@@ -71,6 +73,24 @@ func (handler *Handler) SessionCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler *Handler) SessionDelete(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement
-	handler.Response.WriteJSON(w, http.StatusOK, nil, nil)
+	idParam := r.PathValue("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		handler.Response.ClientError(w, consts.ErrInvalidParam, http.StatusBadRequest)
+		return
+	}
+
+	authenticatedUser := r.Context().Value("admin").(sqlc.Admin)
+
+	if id != int(authenticatedUser.ID) {
+		handler.Response.ClientError(w, consts.ErrForbidden, http.StatusForbidden)
+		return
+	}
+
+	err = handler.Queries.DeleteTokens(r.Context(), int32(id))
+	if err != nil {
+		handler.Response.ServerError(w, err)
+	}
+
+	handler.Response.WriteJSON(w, http.StatusNoContent, nil, nil)
 }

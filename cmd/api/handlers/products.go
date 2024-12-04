@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/daut/jed/internal/consts"
 	"github.com/daut/jed/internal/utils"
 	db "github.com/daut/jed/sqlc"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -48,7 +49,7 @@ func (handler *Handler) ProductRead(w http.ResponseWriter, r *http.Request) {
 	idParam := r.PathValue("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		handler.Response.ClientError(w, "invalid id", http.StatusBadRequest)
+		handler.Response.ClientError(w, consts.ErrInvalidParam, http.StatusBadRequest)
 		return
 	}
 	prod, err := handler.Queries.GetProduct(r.Context(), int32(id))
@@ -102,7 +103,7 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 	idParam := r.PathValue("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		handler.Response.ClientError(w, "invalid id", http.StatusBadRequest)
+		handler.Response.ClientError(w, consts.ErrInvalidParam, http.StatusBadRequest)
 		return
 	}
 
@@ -148,7 +149,7 @@ func (handler *Handler) ProductDelete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		handler.Response.ClientError(w, "invalid id", http.StatusBadRequest)
+		handler.Response.ClientError(w, consts.ErrInvalidParam, http.StatusBadRequest)
 		return
 	}
 

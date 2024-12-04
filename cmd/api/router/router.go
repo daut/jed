@@ -34,5 +34,7 @@ func New(queries *db.Queries, logger *utils.Logger) http.Handler {
 	router.Handle("GET /admins/{username}", isAdmin.ThenFunc(handlers.AdminRead))
 	router.Handle("GET /admins", isAdmin.ThenFunc(handlers.AdminList))
 
+	router.Handle("DELETE /sessions/{id}", isAdmin.ThenFunc(handlers.SessionDelete))
+
 	return router
 }
