@@ -25,8 +25,8 @@ func TestProductRead(t *testing.T) {
 	}{
 		{Name: "Product exists", ID: "1", Expected: `{"id":1,"name":"product1","description":"good product","price":100.00}`, ExpectedStatus: http.StatusOK},
 		{Name: "Product does not exist", ID: "2", Expected: `{"message":"the requested resource could not be found"}`, ExpectedStatus: http.StatusNotFound},
-		{Name: "No ID", ID: "", Expected: `{"message":"invalid id"}`, ExpectedStatus: http.StatusBadRequest},
-		{Name: "Invalid ID", ID: "invalid", Expected: `{"message":"invalid id"}`, ExpectedStatus: http.StatusBadRequest},
+		{Name: "No ID", ID: "", Expected: `{"message":"invalid parameter"}`, ExpectedStatus: http.StatusBadRequest},
+		{Name: "Invalid ID", ID: "invalid", Expected: `{"message":"invalid parameter"}`, ExpectedStatus: http.StatusBadRequest},
 	}
 
 	for _, tt := range tests {
@@ -120,7 +120,7 @@ func TestProductUpdate(t *testing.T) {
 		ExpectedStatus int
 	}{
 		{Name: "Update price", ID: "1", Body: `{"name":"product1","description":"good product","price":1000}`, Expected: `{"id":1,"name":"product1","description":"good product","price":1000.00}`, ExpectedStatus: http.StatusOK},
-		{Name: "Invalid ID", ID: "invalid", Body: `{"name":"product1","description":"good product","price":1000}`, Expected: `{"message":"invalid id"}`, ExpectedStatus: http.StatusBadRequest},
+		{Name: "Invalid ID", ID: "invalid", Body: `{"name":"product1","description":"good product","price":1000}`, Expected: `{"message":"invalid parameter"}`, ExpectedStatus: http.StatusBadRequest},
 		{Name: "Missing price", ID: "1", Body: `{"name":"product1","description":"good product"}`, Expected: `{"message":"invalid input"}`, ExpectedStatus: http.StatusBadRequest},
 	}
 
@@ -152,8 +152,8 @@ func TestProductDelete(t *testing.T) {
 	}{
 		{Name: "Delete product", ID: "1", Expected: "null", ExpectedStatus: http.StatusNoContent},
 		{Name: "Product does not exist", ID: "2", Expected: `{"message":"the requested resource could not be found"}`, ExpectedStatus: http.StatusNotFound},
-		{Name: "No ID", ID: "", Expected: `{"message":"invalid id"}`, ExpectedStatus: http.StatusBadRequest},
-		{Name: "Invalid ID", ID: "invalid", Expected: `{"message":"invalid id"}`, ExpectedStatus: http.StatusBadRequest},
+		{Name: "No ID", ID: "", Expected: `{"message":"invalid parameter"}`, ExpectedStatus: http.StatusBadRequest},
+		{Name: "Invalid ID", ID: "invalid", Expected: `{"message":"invalid parameter"}`, ExpectedStatus: http.StatusBadRequest},
 	}
 
 	for _, tt := range tests {

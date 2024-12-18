@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -9,7 +10,7 @@ import (
 	"github.com/daut/jed/internal/testutils"
 )
 
-func TestLogin(t *testing.T) {
+func TestSessionCreate(t *testing.T) {
 	t.Parallel()
 	queries := []string{"insert into admins (username, password) values ('admin', crypt('password', gen_salt('bf')));"}
 	dbr := testutils.NewDBResources(t, queries)
@@ -32,7 +33,20 @@ func TestLogin(t *testing.T) {
 			w := httptest.NewRecorder()
 			handlers.SessionCreate(w, req)
 			resp := w.Result()
+			var response struct {
+				Token     string `json:"token"`
+				ExpiresAt string `json:"expiresAt"`
+			}
+			err := json.NewDecoder(resp.Body).Decode(&response)
+			assert.Nil(t, err)
 			assert.Equal(t, tt.ExpectedStatus, resp.StatusCode)
+			assert.NotNil(t, response.Token)
+			assert.NotNil(t, response.ExpiresAt)
 		})
 	}
+}
+
+func TestSessionDelete(t *testing.T) {
+	t.Parallel()
+	// queries := []string{"insert into admins (username, password) values ('admin', crypt('password', gen_salt('bf')));"}
 }

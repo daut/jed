@@ -9,6 +9,13 @@ func Equal[T comparable](t testing.TB, expected, actual T) {
 	}
 }
 
+func NotNil(t testing.TB, actual any) {
+	t.Helper()
+	if actual == nil {
+		t.Errorf("expected: not nil; got: %v", actual)
+	}
+}
+
 func Nil(t testing.TB, actual any) {
 	t.Helper()
 	if actual != nil {
