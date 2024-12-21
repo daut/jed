@@ -6,4 +6,5 @@ var (
 	ErrMissingField = "must be provided"
 	ErrInvalidCreds = "invalid credentials"
 	ErrForbidden    = "forbidden action"
+	ErrUnauthorized = "unauthorized"
 )

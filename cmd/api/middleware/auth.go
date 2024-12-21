@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/daut/jed/internal/consts"
 )
 
 func (mw *Middleware) Auth(next http.Handler) http.Handler {
@@ -20,7 +22,7 @@ func (mw *Middleware) Auth(next http.Handler) http.Handler {
 
 		headerParts := strings.Split(authHeader, " ")
 		if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-			mw.Response.ClientError(w, "invalid token", http.StatusUnauthorized)
+			mw.Response.ClientError(w, consts.ErrUnauthorized, http.StatusUnauthorized)
 			return
 		}
 
@@ -29,7 +31,7 @@ func (mw *Middleware) Auth(next http.Handler) http.Handler {
 		token, err := mw.Queries.GetToken(r.Context(), hash[:])
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				mw.Response.ClientError(w, "invalid token", http.StatusUnauthorized)
+				mw.Response.ClientError(w, consts.ErrUnauthorized, http.StatusUnauthorized)
 			} else {
 				mw.Response.ServerError(w, err)
 			}

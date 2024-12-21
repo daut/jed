@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/daut/jed/internal/assert"
+	"github.com/daut/jed/internal/consts"
 	"github.com/daut/jed/internal/utils"
 )
 
@@ -22,8 +23,8 @@ func TestClientError(t *testing.T) {
 		ExpectedWWWAuthenticateHeader string
 		ExpectedStatus                int
 	}{
-		{Name: "Unauthorized", Message: "invalid token", ExpectedWWWAuthenticateHeader: "Bearer", ExpectedStatus: http.StatusUnauthorized},
-		{Name: "Bad Request", Message: "invalid input", ExpectedWWWAuthenticateHeader: "", ExpectedStatus: http.StatusBadRequest},
+		{Name: "Unauthorized", Message: consts.ErrUnauthorized, ExpectedWWWAuthenticateHeader: "Bearer", ExpectedStatus: http.StatusUnauthorized},
+		{Name: "Bad Request", Message: consts.ErrInvalidInput, ExpectedWWWAuthenticateHeader: "", ExpectedStatus: http.StatusBadRequest},
 	}
 
 	for _, tt := range tests {
