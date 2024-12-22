@@ -14,7 +14,7 @@ import (
 const createProduct = `-- name: CreateProduct :one
 INSERT INTO products (name, description, price)
 VALUES ($1, $2, $3)
-RETURNING id, name, description, price
+RETURNING id, name, description, price, inventory_count
 `
 
 type CreateProductParams struct {
@@ -31,6 +31,7 @@ func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (P
 		&i.Name,
 		&i.Description,
 		&i.Price,
+		&i.InventoryCount,
 	)
 	return i, err
 }
@@ -38,7 +39,7 @@ func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (P
 const deleteProduct = `-- name: DeleteProduct :one
 DELETE FROM products
 WHERE id = $1
-RETURNING id, name, description, price
+RETURNING id, name, description, price, inventory_count
 `
 
 func (q *Queries) DeleteProduct(ctx context.Context, id int32) (Product, error) {
@@ -49,12 +50,13 @@ func (q *Queries) DeleteProduct(ctx context.Context, id int32) (Product, error) 
 		&i.Name,
 		&i.Description,
 		&i.Price,
+		&i.InventoryCount,
 	)
 	return i, err
 }
 
 const getProduct = `-- name: GetProduct :one
-SELECT id, name, description, price FROM products
+SELECT id, name, description, price, inventory_count FROM products
 WHERE id = $1
 `
 
@@ -66,12 +68,13 @@ func (q *Queries) GetProduct(ctx context.Context, id int32) (Product, error) {
 		&i.Name,
 		&i.Description,
 		&i.Price,
+		&i.InventoryCount,
 	)
 	return i, err
 }
 
 const getProducts = `-- name: GetProducts :many
-SELECT id, name, description, price FROM products
+SELECT id, name, description, price, inventory_count FROM products
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -96,6 +99,7 @@ func (q *Queries) GetProducts(ctx context.Context, arg GetProductsParams) ([]Pro
 			&i.Name,
 			&i.Description,
 			&i.Price,
+			&i.InventoryCount,
 		); err != nil {
 			return nil, err
 		}
@@ -111,7 +115,7 @@ const updateProduct = `-- name: UpdateProduct :one
 UPDATE products
 SET name = $1, description = $2, price = $3
 WHERE id = $4
-RETURNING id, name, description, price
+RETURNING id, name, description, price, inventory_count
 `
 
 type UpdateProductParams struct {
@@ -134,6 +138,7 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (P
 		&i.Name,
 		&i.Description,
 		&i.Price,
+		&i.InventoryCount,
 	)
 	return i, err
 }

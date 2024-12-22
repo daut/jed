@@ -4,7 +4,11 @@ CREATE TABLE IF NOT EXISTS products (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name VARCHAR(255) NOT NULL,
   description TEXT,
-  price DECIMAL(10, 2)
+  price DECIMAL(10, 2),
+  inventory_count INTEGER DEFAULT 1 NOT NULL,
+
+  CONSTRAINT positive_price CHECK (price > 0),
+  CONSTRAINT positive_inventory_count CHECK (inventory_count > 0)
 );
 
 CREATE TABLE IF NOT EXISTS admins (

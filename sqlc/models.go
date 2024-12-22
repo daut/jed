@@ -15,10 +15,11 @@ type Admin struct {
 }
 
 type Product struct {
-	ID          int32          `json:"id"`
-	Name        string         `json:"name"`
-	Description pgtype.Text    `json:"description"`
-	Price       pgtype.Numeric `json:"price"`
+	ID             int32          `json:"id"`
+	Name           string         `json:"name"`
+	Description    pgtype.Text    `json:"description"`
+	Price          pgtype.Numeric `json:"price"`
+	InventoryCount int32          `json:"inventory_count"`
 }
 
 type Token struct {
