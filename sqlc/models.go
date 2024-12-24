@@ -14,6 +14,17 @@ type Admin struct {
 	Password string `json:"password"`
 }
 
+type Order struct {
+	ID        int32            `json:"id"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+}
+
+type OrderProduct struct {
+	OrderID   int32 `json:"order_id"`
+	ProductID int32 `json:"product_id"`
+	Quantity  int32 `json:"quantity"`
+}
+
 type Product struct {
 	ID             int32          `json:"id"`
 	Name           string         `json:"name"`
