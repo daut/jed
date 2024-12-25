@@ -9,8 +9,11 @@ LIMIT $1
 OFFSET $2;
 
 -- name: CreateProduct :one
-INSERT INTO products (name, description, price)
-VALUES ($1, $2, $3)
+INSERT INTO products (name, description, price, inventory_count)
+VALUES (
+  $1, $2, $3,
+  coalesce(sqlc.narg(inventory_count)::integer, 1)
+)
 RETURNING *;
 
 -- name: UpdateProduct :one

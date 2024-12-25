@@ -12,19 +12,28 @@ import (
 )
 
 const createProduct = `-- name: CreateProduct :one
-INSERT INTO products (name, description, price)
-VALUES ($1, $2, $3)
+INSERT INTO products (name, description, price, inventory_count)
+VALUES (
+  $1, $2, $3,
+  coalesce($4::integer, 1)
+)
 RETURNING id, name, description, price, inventory_count
 `
 
 type CreateProductParams struct {
-	Name        string         `json:"name"`
-	Description pgtype.Text    `json:"description"`
-	Price       pgtype.Numeric `json:"price"`
+	Name           string         `json:"name"`
+	Description    pgtype.Text    `json:"description"`
+	Price          pgtype.Numeric `json:"price"`
+	InventoryCount pgtype.Int4    `json:"inventory_count"`
 }
 
 func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error) {
-	row := q.db.QueryRow(ctx, createProduct, arg.Name, arg.Description, arg.Price)
+	row := q.db.QueryRow(ctx, createProduct,
+		arg.Name,
+		arg.Description,
+		arg.Price,
+		arg.InventoryCount,
+	)
 	var i Product
 	err := row.Scan(
 		&i.ID,

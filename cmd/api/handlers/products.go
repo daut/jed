@@ -14,15 +14,17 @@ import (
 )
 
 func (handler *Handler) ProductCreate(w http.ResponseWriter, r *http.Request) {
+	// TODO: think about separating this into a separate model
 	var input struct {
-		Name        string  `json:"name"`
-		Description string  `json:"description"`
-		Price       float64 `json:"price"`
+		Name           string  `json:"name"`
+		Description    string  `json:"description"`
+		Price          float64 `json:"price"`
+		InventoryCount *int32  `json:"inventoryCount"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		handler.Response.ClientError(w, "invalid input", http.StatusBadRequest)
+		handler.Response.ClientError(w, consts.ErrInvalidInput, http.StatusBadRequest)
 		return
 	}
 
@@ -31,10 +33,20 @@ func (handler *Handler) ProductCreate(w http.ResponseWriter, r *http.Request) {
 		handler.Response.ClientError(w, "invalid price", http.StatusBadRequest)
 		return
 	}
+
+	var inventoryCount pgtype.Int4
+	if input.InventoryCount == nil {
+		inventoryCount.Valid = false
+	} else {
+		inventoryCount.Valid = true
+		inventoryCount.Int32 = *input.InventoryCount
+	}
+
 	args := &db.CreateProductParams{
-		Name:        input.Name,
-		Description: pgtype.Text{String: input.Description, Valid: true},
-		Price:       *price,
+		Name:           input.Name,
+		Description:    pgtype.Text{String: input.Description, Valid: true},
+		Price:          *price,
+		InventoryCount: inventoryCount,
 	}
 	prod, err := handler.Queries.CreateProduct(r.Context(), *args)
 	if err != nil {
