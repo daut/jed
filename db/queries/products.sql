@@ -18,8 +18,8 @@ RETURNING *;
 
 -- name: UpdateProduct :one
 UPDATE products
-SET name = $1, description = $2, price = $3
-WHERE id = $4
+SET name = $1, description = $2, price = $3, inventory_count = $4
+WHERE id = $5
 RETURNING *;
 
 -- name: DeleteProduct :one

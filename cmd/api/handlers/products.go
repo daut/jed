@@ -120,9 +120,10 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var input struct {
-		Name        *string  `json:"name"`
-		Description *string  `json:"description"`
-		Price       *float64 `json:"price"`
+		Name           *string  `json:"name"`
+		Description    *string  `json:"description"`
+		Price          *float64 `json:"price"`
+		InventoryCount *int32   `json:"inventoryCount"`
 	}
 
 	err = json.NewDecoder(r.Body).Decode(&input)
@@ -131,7 +132,7 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if input.Name == nil || input.Description == nil || input.Price == nil {
+	if input.Name == nil || input.Description == nil || input.Price == nil || input.InventoryCount == nil {
 		handler.Response.ClientError(w, "invalid input", http.StatusBadRequest)
 		return
 	}
@@ -141,11 +142,13 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 		handler.Response.ClientError(w, "invalid price", http.StatusBadRequest)
 		return
 	}
+
 	args := &db.UpdateProductParams{
-		Name:        *input.Name,
-		Description: pgtype.Text{String: *input.Description, Valid: true},
-		Price:       *price,
-		ID:          int32(id),
+		Name:           *input.Name,
+		Description:    pgtype.Text{String: *input.Description, Valid: true},
+		Price:          *price,
+		InventoryCount: *input.InventoryCount,
+		ID:             int32(id),
 	}
 	product, err := handler.Queries.UpdateProduct(r.Context(), *args)
 	if err != nil {

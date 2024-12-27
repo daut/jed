@@ -122,16 +122,17 @@ func (q *Queries) GetProducts(ctx context.Context, arg GetProductsParams) ([]Pro
 
 const updateProduct = `-- name: UpdateProduct :one
 UPDATE products
-SET name = $1, description = $2, price = $3
-WHERE id = $4
+SET name = $1, description = $2, price = $3, inventory_count = $4
+WHERE id = $5
 RETURNING id, name, description, price, inventory_count
 `
 
 type UpdateProductParams struct {
-	Name        string         `json:"name"`
-	Description pgtype.Text    `json:"description"`
-	Price       pgtype.Numeric `json:"price"`
-	ID          int32          `json:"id"`
+	Name           string         `json:"name"`
+	Description    pgtype.Text    `json:"description"`
+	Price          pgtype.Numeric `json:"price"`
+	InventoryCount int32          `json:"inventory_count"`
+	ID             int32          `json:"id"`
 }
 
 func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error) {
@@ -139,6 +140,7 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (P
 		arg.Name,
 		arg.Description,
 		arg.Price,
+		arg.InventoryCount,
 		arg.ID,
 	)
 	var i Product

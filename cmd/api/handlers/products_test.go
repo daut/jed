@@ -119,8 +119,8 @@ func TestProductUpdate(t *testing.T) {
 		Expected       string
 		ExpectedStatus int
 	}{
-		{Name: "Update price", ID: "1", Body: `{"name":"product1","description":"good product","price":1000}`, Expected: `{"id":1,"name":"product1","description":"good product","price":1000.00,"inventory_count":1}`, ExpectedStatus: http.StatusOK},
-		{Name: "Invalid ID", ID: "invalid", Body: `{"name":"product1","description":"good product","price":1000}`, Expected: `{"message":"invalid parameter"}`, ExpectedStatus: http.StatusBadRequest},
+		{Name: "Update price", ID: "1", Body: `{"name":"product1","description":"good product","price":1000,"inventoryCount":1}`, Expected: `{"id":1,"name":"product1","description":"good product","price":1000.00,"inventory_count":1}`, ExpectedStatus: http.StatusOK},
+		{Name: "Invalid ID", ID: "invalid", Body: `{"name":"product1","description":"good product","price":1000,"inventoryCount":1}`, Expected: `{"message":"invalid parameter"}`, ExpectedStatus: http.StatusBadRequest},
 		{Name: "Missing price", ID: "1", Body: `{"name":"product1","description":"good product"}`, Expected: `{"message":"invalid input"}`, ExpectedStatus: http.StatusBadRequest},
 	}
 
