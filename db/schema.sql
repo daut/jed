@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS products (
   name VARCHAR(255) NOT NULL,
   description TEXT,
   price DECIMAL(10, 2),
-  inventory_count INTEGER DEFAULT 1 NOT NULL,
+  inventory_count INTEGER,
 
   CONSTRAINT positive_price CHECK (price > 0),
   CONSTRAINT positive_inventory_count CHECK (inventory_count > 0)

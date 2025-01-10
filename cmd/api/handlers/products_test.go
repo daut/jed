@@ -23,7 +23,7 @@ func TestProductRead(t *testing.T) {
 		Expected       string
 		ExpectedStatus int
 	}{
-		{Name: "Product exists", ID: "1", Expected: `{"id":1,"name":"product1","description":"good product","price":100.00,"inventory_count":1}`, ExpectedStatus: http.StatusOK},
+		{Name: "Product exists", ID: "1", Expected: `{"id":1,"name":"product1","description":"good product","price":100.00,"inventory_count":null}`, ExpectedStatus: http.StatusOK},
 		{Name: "Product does not exist", ID: "2", Expected: `{"message":"the requested resource could not be found"}`, ExpectedStatus: http.StatusNotFound},
 		{Name: "No ID", ID: "", Expected: `{"message":"invalid parameter"}`, ExpectedStatus: http.StatusBadRequest},
 		{Name: "Invalid ID", ID: "invalid", Expected: `{"message":"invalid parameter"}`, ExpectedStatus: http.StatusBadRequest},
@@ -55,8 +55,8 @@ func TestProductList(t *testing.T) {
 		Expected       string
 		ExpectedStatus int
 	}{
-		{Name: "List products", Offset: "1", Expected: `[{"id":1,"name":"product1","description":"good product","price":100.00,"inventory_count":1}]`, ExpectedStatus: http.StatusOK},
-		{Name: "No offset", Offset: "", Expected: `[{"id":1,"name":"product1","description":"good product","price":100.00,"inventory_count":1}]`, ExpectedStatus: http.StatusOK},
+		{Name: "List products", Offset: "1", Expected: `[{"id":1,"name":"product1","description":"good product","price":100.00,"inventory_count":null}]`, ExpectedStatus: http.StatusOK},
+		{Name: "No offset", Offset: "", Expected: `[{"id":1,"name":"product1","description":"good product","price":100.00,"inventory_count":null}]`, ExpectedStatus: http.StatusOK},
 		{Name: "Invalid offset", Offset: "invalid", Expected: `{"message":"invalid page"}`, ExpectedStatus: http.StatusBadRequest},
 		{Name: "No products", Offset: "5", Expected: `{"message":"the requested resource could not be found"}`, ExpectedStatus: http.StatusNotFound},
 		{Name: "Negative offset", Offset: "-1", Expected: `{"message":"invalid page"}`, ExpectedStatus: http.StatusBadRequest},
@@ -89,7 +89,7 @@ func TestProductCreate(t *testing.T) {
 		Expected       string
 		ExpectedStatus int
 	}{
-		{Name: "Valid product", Body: `{"name":"product1","description":"good product","price":100}`, Expected: `{"id":1,"name":"product1","description":"good product","price":100.00,"inventory_count":1}`, ExpectedStatus: http.StatusCreated},
+		{Name: "Valid product", Body: `{"name":"product1","description":"good product","price":100}`, Expected: `{"id":1,"name":"product1","description":"good product","price":100.00,"inventory_count":null}`, ExpectedStatus: http.StatusCreated},
 		{Name: "Invalid JSON", Body: `{"name":"product1"`, Expected: `{"message":"invalid input"}`, ExpectedStatus: http.StatusBadRequest},
 	}
 

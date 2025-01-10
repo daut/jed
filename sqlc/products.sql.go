@@ -14,8 +14,7 @@ import (
 const createProduct = `-- name: CreateProduct :one
 INSERT INTO products (name, description, price, inventory_count)
 VALUES (
-  $1, $2, $3,
-  coalesce($4::integer, 1)
+  $1, $2, $3, $4
 )
 RETURNING id, name, description, price, inventory_count
 `
@@ -131,7 +130,7 @@ type UpdateProductParams struct {
 	Name           string         `json:"name"`
 	Description    pgtype.Text    `json:"description"`
 	Price          pgtype.Numeric `json:"price"`
-	InventoryCount int32          `json:"inventory_count"`
+	InventoryCount pgtype.Int4    `json:"inventory_count"`
 	ID             int32          `json:"id"`
 }
 

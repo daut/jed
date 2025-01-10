@@ -30,7 +30,7 @@ type Product struct {
 	Name           string         `json:"name"`
 	Description    pgtype.Text    `json:"description"`
 	Price          pgtype.Numeric `json:"price"`
-	InventoryCount int32          `json:"inventory_count"`
+	InventoryCount pgtype.Int4    `json:"inventory_count"`
 }
 
 type Token struct {

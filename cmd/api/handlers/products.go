@@ -143,11 +143,19 @@ func (handler *Handler) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var inventoryCount pgtype.Int4
+	if input.InventoryCount == nil {
+		inventoryCount.Valid = false
+	} else {
+		inventoryCount.Valid = true
+		inventoryCount.Int32 = *input.InventoryCount
+	}
+
 	args := &db.UpdateProductParams{
 		Name:           *input.Name,
 		Description:    pgtype.Text{String: *input.Description, Valid: true},
 		Price:          *price,
-		InventoryCount: *input.InventoryCount,
+		InventoryCount: inventoryCount,
 		ID:             int32(id),
 	}
 	product, err := handler.Queries.UpdateProduct(r.Context(), *args)
