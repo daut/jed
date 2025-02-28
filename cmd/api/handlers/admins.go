@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/daut/jed/internal/consts"
+	"github.com/daut/jed/cmd/api/consts"
 	"github.com/daut/jed/internal/validator"
 	db "github.com/daut/jed/sqlc"
 )

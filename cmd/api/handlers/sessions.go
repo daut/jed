@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/daut/jed/internal/consts"
+	"github.com/daut/jed/cmd/api/consts"
 	"github.com/daut/jed/internal/tokens"
 	"github.com/daut/jed/internal/validator"
 	"github.com/daut/jed/sqlc"

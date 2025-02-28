@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/daut/jed/internal/consts"
+	"github.com/daut/jed/cmd/api/consts"
 )
 
 func (mw *Middleware) Auth(next http.Handler) http.Handler {

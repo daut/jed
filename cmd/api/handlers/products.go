@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/daut/jed/internal/consts"
+	"github.com/daut/jed/cmd/api/consts"
 	"github.com/daut/jed/internal/utils"
 	db "github.com/daut/jed/sqlc"
 	"github.com/jackc/pgx/v5/pgtype"

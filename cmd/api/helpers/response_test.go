@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/daut/jed/cmd/api/consts"
 	"github.com/daut/jed/internal/assert"
-	"github.com/daut/jed/internal/consts"
 	"github.com/daut/jed/internal/utils"
 )
 
