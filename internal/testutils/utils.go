@@ -19,10 +19,11 @@ type DBResources struct {
 	Pool      *pgxpool.Pool
 }
 
+// NewDBResources creates a new DBResources instance with a new gnomock container and pool.
 func NewDBResources(t *testing.T, queries []string) *DBResources {
 	t.Helper()
-	container := NewDBContainer(t, queries)
-	pool := NewDBPool(t, container)
+	container := newDBContainer(t, queries)
+	pool := newDBPool(t, container)
 	return &DBResources{Container: container, Pool: pool}
 }
 
@@ -32,7 +33,7 @@ func (dbr *DBResources) Close(t *testing.T) {
 	gnomock.Stop(dbr.Container)
 }
 
-func NewDBContainer(t *testing.T, queries []string) *gnomock.Container {
+func newDBContainer(t *testing.T, queries []string) *gnomock.Container {
 	t.Helper()
 	queries = append([]string{"CREATE EXTENSION IF NOT EXISTS pgcrypto;"}, queries...)
 	p := postgres.Preset(
@@ -49,7 +50,7 @@ func NewDBContainer(t *testing.T, queries []string) *gnomock.Container {
 	return container
 }
 
-func NewDBPool(t *testing.T, container *gnomock.Container) *pgxpool.Pool {
+func newDBPool(t *testing.T, container *gnomock.Container) *pgxpool.Pool {
 	t.Helper()
 	ctx := context.Background()
 	port := container.DefaultPort()
