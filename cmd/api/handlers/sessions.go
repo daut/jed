@@ -11,7 +11,6 @@ import (
 	"github.com/daut/jed/cmd/api/consts"
 	"github.com/daut/jed/internal/tokens"
 	"github.com/daut/jed/internal/validator"
-	"github.com/daut/jed/sqlc"
 	db "github.com/daut/jed/sqlc"
 	"github.com/jackc/pgx/v5/pgtype"
 	"golang.org/x/crypto/bcrypt"
@@ -80,7 +79,7 @@ func (handler *Handler) SessionDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authenticatedUser := r.Context().Value("admin").(sqlc.Admin)
+	authenticatedUser := r.Context().Value("admin").(db.Admin)
 
 	if id != int(authenticatedUser.ID) {
 		handler.Response.ClientError(w, consts.ErrForbidden, http.StatusForbidden)
