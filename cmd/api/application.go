@@ -10,18 +10,16 @@ import (
 )
 
 type Application struct {
-	Queries *db.Queries
-	Logger  *utils.Logger
-	Router  http.Handler
+	Logger *utils.Logger
+	Router http.Handler
 }
 
-func NewApp(conn *pgxpool.Pool) *Application {
-	queries := db.New(conn)
+func NewApp(pool *pgxpool.Pool) *Application {
+	queries := db.New(pool)
 	logger := utils.NewLogger()
-	router := router.New(queries, logger)
+	router := router.New(queries, logger, pool)
 	return &Application{
-		Queries: queries,
-		Logger:  logger,
-		Router:  router,
+		Logger: logger,
+		Router: router,
 	}
 }

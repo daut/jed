@@ -8,12 +8,13 @@ import (
 	"github.com/daut/jed/cmd/api/middleware"
 	"github.com/daut/jed/internal/utils"
 	db "github.com/daut/jed/sqlc"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/justinas/alice"
 )
 
-func New(queries *db.Queries, logger *utils.Logger) http.Handler {
+func New(queries *db.Queries, logger *utils.Logger, pool *pgxpool.Pool) http.Handler {
 	responseHelper := helpers.NewResponse(logger)
-	handlers := handlers.New(queries, logger, responseHelper)
+	handlers := handlers.New(queries, logger, responseHelper, pool)
 	router := http.NewServeMux()
 
 	mw := middleware.New(queries, logger, responseHelper)

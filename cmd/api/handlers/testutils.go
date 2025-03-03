@@ -11,6 +11,6 @@ func initHandlers(pool *pgxpool.Pool) *Handler {
 	queries := db.New(pool)
 	logger := utils.NewLogger()
 	responseHelper := helpers.NewResponse(logger)
-	handlers := New(queries, logger, responseHelper)
+	handlers := New(queries, logger, responseHelper, pool)
 	return handlers
 }
